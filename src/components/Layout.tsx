@@ -56,7 +56,7 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
         <Toolbar>
           <Cable sx={{ mr: 2 }} />
           <Typography variant="h6" noWrap component="div">
-            International Electrical Calculator v1.0
+            International Electrical Calculator v1.0.1
           </Typography>
         </Toolbar>
       </AppBar>

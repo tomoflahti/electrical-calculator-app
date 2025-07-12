@@ -1,7 +1,7 @@
 {
   "name": "electrical-calc-app",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "International Electrical Wiring Calculator supporting NEC and IEC standards",
   "keywords": [
