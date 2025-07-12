@@ -1,0 +1,85 @@
+{
+  "name": "electrical-calc-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "International Electrical Wiring Calculator supporting NEC and IEC standards",
+  "keywords": [
+    "electrical",
+    "calculator",
+    "NEC",
+    "IEC",
+    "wire",
+    "cable",
+    "engineering"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:ci": "npm ci --only=production --no-optional && npm run build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "serve": "node server.js",
+    "start": "npm run serve",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:performance": "jest --testPathPatterns=performance",
+    "test:smoke": "jest --testPathPatterns=smoke --verbose",
+    "test:ci": "jest --coverage --watchAll=false",
+    "docker:build": "docker build -t electrical-calculator .",
+    "docker:run": "docker run -p 8080:80 electrical-calculator",
+    "docker:compose": "docker-compose up -d",
+    "validate": "node scripts/validate-deployment.js",
+    "deploy:netlify": "npm run build && npm run validate && netlify deploy --prod --dir=dist",
+    "deploy:vercel": "vercel --prod",
+    "health": "curl -f http://localhost:3000/health || echo 'Service not available'",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.2.0",
+    "@mui/material": "^7.2.0",
+    "@mui/x-data-grid": "^8.7.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "recharts": "^3.0.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@playwright/test": "^1.53.2",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "eslint": "^9.29.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.2.0",
+    "husky": "^9.1.7",
+    "jest": "^30.0.4",
+    "jest-environment-jsdom": "^30.0.4",
+    "lint-staged": "^16.1.2",
+    "ts-jest": "^29.4.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.34.1",
+    "vite": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  }
+}

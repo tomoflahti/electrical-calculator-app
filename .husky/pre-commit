@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run TypeScript type checking
+npx tsc --noEmit
+
+# Run linting and fix auto-fixable issues
+npx lint-staged
+
+# Run build to ensure no build errors
+npm run build > /dev/null 2>&1
+
+echo "✅ Pre-commit checks passed!"

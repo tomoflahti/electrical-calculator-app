@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  electrical-calculator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: electrical-calculator
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.electrical-calc.rule=Host(`electrical-calc.localhost`)"
+      - "traefik.http.services.electrical-calc.loadbalancer.server.port=80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - electrical-calc-network
+
+  # Optional: Add Traefik reverse proxy for production
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8090:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - electrical-calc-network
+    profiles:
+      - traefik
+
+networks:
+  electrical-calc-network:
+    driver: bridge
+
+# Volumes for persistent data (if needed in future)
+volumes:
+  electrical-calc-data:

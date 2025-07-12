@@ -1,0 +1,21 @@
+# Simple Netlify configuration for fallback
+[build]
+  publish = "dist"
+  command = "npm install && npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NODE_ENV = "production"
+
+# SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Basic security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
