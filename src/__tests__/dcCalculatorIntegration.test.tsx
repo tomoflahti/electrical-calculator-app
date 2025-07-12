@@ -1,48 +1,50 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import DCWireCalculator from '../components/DCWireCalculator';
-import DCApplicationSelector from '../components/DCApplicationSelector';
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import DCWireCalculator from "../components/DCWireCalculator";
+import DCApplicationSelector from "../components/DCApplicationSelector";
 
 const theme = createTheme();
 
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider theme={theme}>
-    {children}
-  </ThemeProvider>
+  <ThemeProvider theme={theme}>{children}</ThemeProvider>
 );
 
-describe('DC Calculator Integration Tests', () => {
-  describe('DCWireCalculator Component', () => {
-    it('should render with default automotive configuration', () => {
+describe("DC Calculator Integration Tests", () => {
+  describe("DCWireCalculator Component", () => {
+    it("should render with default automotive configuration", () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_AUTOMOTIVE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
-      expect(screen.getByText('DC Wire Calculator')).toBeInTheDocument();
-      expect(screen.getByText(/automotive.*electrical systems/i)).toBeInTheDocument();
-      expect(screen.getByDisplayValue('12')).toBeInTheDocument(); // Default 12V
-      expect(screen.getByDisplayValue('20')).toBeInTheDocument(); // Default 20A current
+      expect(screen.getByText("DC Wire Calculator")).toBeInTheDocument();
+      expect(
+        screen.getByText(/automotive.*electrical systems/i),
+      ).toBeInTheDocument();
+      expect(screen.getByDisplayValue("12")).toBeInTheDocument(); // Default 12V
+      expect(screen.getByDisplayValue("20")).toBeInTheDocument(); // Default 20A current
     });
 
-    it('should perform automotive calculation and show results', async () => {
+    it("should perform automotive calculation and show results", async () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_AUTOMOTIVE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Fill in inputs for automotive calculation
       const currentInput = screen.getByLabelText(/load current/i);
       const lengthInput = screen.getByLabelText(/circuit length/i);
-      
-      fireEvent.change(currentInput, { target: { value: '25' } });
-      fireEvent.change(lengthInput, { target: { value: '10' } });
+
+      fireEvent.change(currentInput, { target: { value: "25" } });
+      fireEvent.change(lengthInput, { target: { value: "10" } });
 
       // Click calculate
-      const calculateButton = screen.getByRole('button', { name: /calculate wire size/i });
+      const calculateButton = screen.getByRole("button", {
+        name: /calculate wire size/i,
+      });
       fireEvent.click(calculateButton);
 
       // Wait for calculation to complete
@@ -53,78 +55,86 @@ describe('DC Calculator Integration Tests', () => {
       // Verify automotive-specific compliance
       const complianceSection = screen.getByText(/compliance status/i);
       expect(complianceSection).toBeInTheDocument();
-      
+
       // Should show efficiency percentage
       expect(screen.getByText(/efficiency/i)).toBeInTheDocument();
       expect(screen.getByText(/%/)).toBeInTheDocument();
     });
 
-    it('should validate input and show errors', async () => {
+    it("should validate input and show errors", async () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_AUTOMOTIVE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Set invalid current (negative)
       const currentInput = screen.getByLabelText(/load current/i);
-      fireEvent.change(currentInput, { target: { value: '-5' } });
+      fireEvent.change(currentInput, { target: { value: "-5" } });
 
-      const calculateButton = screen.getByRole('button', { name: /calculate wire size/i });
+      const calculateButton = screen.getByRole("button", {
+        name: /calculate wire size/i,
+      });
       fireEvent.click(calculateButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/current must be greater than 0/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/current must be greater than 0/i),
+        ).toBeInTheDocument();
       });
     });
 
-    it('should switch between different DC applications', async () => {
+    it("should switch between different DC applications", async () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_MARINE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should show marine-specific content
       expect(screen.getByText(/marine.*systems/i)).toBeInTheDocument();
-      
+
       // Check for marine voltage options (12V, 24V, 48V)
       const voltageSelect = screen.getByLabelText(/system voltage/i);
       fireEvent.mouseDown(voltageSelect);
-      
+
       await waitFor(() => {
-        expect(screen.getByText('12V DC')).toBeInTheDocument();
-        expect(screen.getByText('24V DC')).toBeInTheDocument();
-        expect(screen.getByText('48V DC')).toBeInTheDocument();
+        expect(screen.getByText("12V DC")).toBeInTheDocument();
+        expect(screen.getByText("24V DC")).toBeInTheDocument();
+        expect(screen.getByText("48V DC")).toBeInTheDocument();
       });
     });
 
-    it('should handle high temperature automotive environment', async () => {
+    it("should handle high temperature automotive environment", async () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_AUTOMOTIVE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Set high temperature (engine compartment)
       const tempInput = screen.getByLabelText(/ambient temperature/i);
-      fireEvent.change(tempInput, { target: { value: '100' } });
+      fireEvent.change(tempInput, { target: { value: "100" } });
 
       // Set high current
       const currentInput = screen.getByLabelText(/load current/i);
-      fireEvent.change(currentInput, { target: { value: '40' } });
+      fireEvent.change(currentInput, { target: { value: "40" } });
 
-      const calculateButton = screen.getByRole('button', { name: /calculate wire size/i });
+      const calculateButton = screen.getByRole("button", {
+        name: /calculate wire size/i,
+      });
       fireEvent.click(calculateButton);
 
       await waitFor(() => {
         // Should show temperature correction in results
-        expect(screen.getByText(/temperature.*correction/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/temperature.*correction/i),
+        ).toBeInTheDocument();
       });
     });
   });
 
-  describe('DCApplicationSelector Component', () => {
+  describe("DCApplicationSelector Component", () => {
     const mockOnApplicationChange = jest.fn();
     const mockOnStandardChange = jest.fn();
 
@@ -132,7 +142,7 @@ describe('DC Calculator Integration Tests', () => {
       jest.clearAllMocks();
     });
 
-    it('should render all DC application options', () => {
+    it("should render all DC application options", () => {
       render(
         <TestWrapper>
           <DCApplicationSelector
@@ -141,24 +151,24 @@ describe('DC Calculator Integration Tests', () => {
             selectedStandard="DC_AUTOMOTIVE"
             onStandardChange={mockOnStandardChange}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
-      expect(screen.getByText('DC Application Selection')).toBeInTheDocument();
-      
+      expect(screen.getByText("DC Application Selection")).toBeInTheDocument();
+
       const applicationSelect = screen.getByLabelText(/dc application type/i);
       fireEvent.mouseDown(applicationSelect);
 
       // Check all applications are present
-      expect(screen.getByText('Automotive')).toBeInTheDocument();
-      expect(screen.getByText('Marine')).toBeInTheDocument();
-      expect(screen.getByText('Solar/Renewable')).toBeInTheDocument();
-      expect(screen.getByText('Telecommunications')).toBeInTheDocument();
-      expect(screen.getByText('Battery Systems')).toBeInTheDocument();
-      expect(screen.getByText('LED Lighting')).toBeInTheDocument();
+      expect(screen.getByText("Automotive")).toBeInTheDocument();
+      expect(screen.getByText("Marine")).toBeInTheDocument();
+      expect(screen.getByText("Solar/Renewable")).toBeInTheDocument();
+      expect(screen.getByText("Telecommunications")).toBeInTheDocument();
+      expect(screen.getByText("Battery Systems")).toBeInTheDocument();
+      expect(screen.getByText("LED Lighting")).toBeInTheDocument();
     });
 
-    it('should show application-specific information', () => {
+    it("should show application-specific information", () => {
       render(
         <TestWrapper>
           <DCApplicationSelector
@@ -167,7 +177,7 @@ describe('DC Calculator Integration Tests', () => {
             selectedStandard="DC_SOLAR"
             onStandardChange={mockOnStandardChange}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should show solar-specific content
@@ -176,7 +186,7 @@ describe('DC Calculator Integration Tests', () => {
       expect(screen.getByText(/efficiency.*optimization/i)).toBeInTheDocument();
     });
 
-    it('should change standard when application changes', () => {
+    it("should change standard when application changes", () => {
       render(
         <TestWrapper>
           <DCApplicationSelector
@@ -185,19 +195,19 @@ describe('DC Calculator Integration Tests', () => {
             selectedStandard="DC_AUTOMOTIVE"
             onStandardChange={mockOnStandardChange}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const applicationSelect = screen.getByLabelText(/dc application type/i);
       fireEvent.mouseDown(applicationSelect);
-      
-      const marineOption = screen.getByText('Marine');
+
+      const marineOption = screen.getByText("Marine");
       fireEvent.click(marineOption);
 
-      expect(mockOnApplicationChange).toHaveBeenCalledWith('marine');
+      expect(mockOnApplicationChange).toHaveBeenCalledWith("marine");
     });
 
-    it('should display voltage and temperature ranges', () => {
+    it("should display voltage and temperature ranges", () => {
       render(
         <TestWrapper>
           <DCApplicationSelector
@@ -206,7 +216,7 @@ describe('DC Calculator Integration Tests', () => {
             selectedStandard="DC_TELECOM"
             onStandardChange={mockOnStandardChange}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should show telecom voltage range (24V, 48V)
@@ -217,7 +227,7 @@ describe('DC Calculator Integration Tests', () => {
       expect(screen.getByText(/Temp.*0.*50/)).toBeInTheDocument();
     });
 
-    it('should show applicable standards for each application', () => {
+    it("should show applicable standards for each application", () => {
       render(
         <TestWrapper>
           <DCApplicationSelector
@@ -226,21 +236,21 @@ describe('DC Calculator Integration Tests', () => {
             selectedStandard="DC_AUTOMOTIVE"
             onStandardChange={mockOnStandardChange}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should show automotive standards
-      expect(screen.getByText('ISO 6722')).toBeInTheDocument();
-      expect(screen.getByText('SAE J1128')).toBeInTheDocument();
+      expect(screen.getByText("ISO 6722")).toBeInTheDocument();
+      expect(screen.getByText("SAE J1128")).toBeInTheDocument();
     });
   });
 
-  describe('Application Switching Integration', () => {
-    it('should handle switching from automotive to marine application', async () => {
+  describe("Application Switching Integration", () => {
+    it("should handle switching from automotive to marine application", async () => {
       const { rerender } = render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_AUTOMOTIVE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Initial automotive state
@@ -250,7 +260,7 @@ describe('DC Calculator Integration Tests', () => {
       rerender(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_MARINE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should show marine content
@@ -258,11 +268,11 @@ describe('DC Calculator Integration Tests', () => {
       expect(screen.getByText(/ABYC.*standards/i)).toBeInTheDocument();
     });
 
-    it('should handle switching from 12V to 48V system', async () => {
+    it("should handle switching from 12V to 48V system", async () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_TELECOM" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should default to 24V or 48V for telecom
@@ -270,49 +280,51 @@ describe('DC Calculator Integration Tests', () => {
       fireEvent.mouseDown(voltageSelect);
 
       await waitFor(() => {
-        expect(screen.getByText('24V DC')).toBeInTheDocument();
-        expect(screen.getByText('48V DC')).toBeInTheDocument();
+        expect(screen.getByText("24V DC")).toBeInTheDocument();
+        expect(screen.getByText("48V DC")).toBeInTheDocument();
         // Should NOT show 12V for telecom
-        expect(screen.queryByText('12V DC')).not.toBeInTheDocument();
+        expect(screen.queryByText("12V DC")).not.toBeInTheDocument();
       });
     });
 
-    it('should preserve input values during application switch', async () => {
+    it("should preserve input values during application switch", async () => {
       const { rerender } = render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_AUTOMOTIVE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Set specific inputs
       const currentInput = screen.getByLabelText(/load current/i);
-      fireEvent.change(currentInput, { target: { value: '30' } });
+      fireEvent.change(currentInput, { target: { value: "30" } });
 
       // Switch application but current should remain
       rerender(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_MARINE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Current should be preserved
-      expect(screen.getByDisplayValue('30')).toBeInTheDocument();
+      expect(screen.getByDisplayValue("30")).toBeInTheDocument();
     });
   });
 
-  describe('Error Handling and Edge Cases', () => {
-    it('should handle very high current requirements', async () => {
+  describe("Error Handling and Edge Cases", () => {
+    it("should handle very high current requirements", async () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_SOLAR" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Set very high current (solar array)
       const currentInput = screen.getByLabelText(/load current/i);
-      fireEvent.change(currentInput, { target: { value: '200' } });
+      fireEvent.change(currentInput, { target: { value: "200" } });
 
-      const calculateButton = screen.getByRole('button', { name: /calculate wire size/i });
+      const calculateButton = screen.getByRole("button", {
+        name: /calculate wire size/i,
+      });
       fireEvent.click(calculateButton);
 
       await waitFor(() => {
@@ -323,21 +335,23 @@ describe('DC Calculator Integration Tests', () => {
       });
     });
 
-    it('should handle extreme temperatures', async () => {
+    it("should handle extreme temperatures", async () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_AUTOMOTIVE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Set extreme cold temperature
       const tempInput = screen.getByLabelText(/ambient temperature/i);
-      fireEvent.change(tempInput, { target: { value: '-30' } });
+      fireEvent.change(tempInput, { target: { value: "-30" } });
 
       const currentInput = screen.getByLabelText(/load current/i);
-      fireEvent.change(currentInput, { target: { value: '15' } });
+      fireEvent.change(currentInput, { target: { value: "15" } });
 
-      const calculateButton = screen.getByRole('button', { name: /calculate wire size/i });
+      const calculateButton = screen.getByRole("button", {
+        name: /calculate wire size/i,
+      });
       fireEvent.click(calculateButton);
 
       await waitFor(() => {
@@ -346,21 +360,23 @@ describe('DC Calculator Integration Tests', () => {
       });
     });
 
-    it('should handle very long cable runs', async () => {
+    it("should handle very long cable runs", async () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_TELECOM" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Set very long cable run
       const lengthInput = screen.getByLabelText(/circuit length/i);
-      fireEvent.change(lengthInput, { target: { value: '500' } });
+      fireEvent.change(lengthInput, { target: { value: "500" } });
 
       const currentInput = screen.getByLabelText(/load current/i);
-      fireEvent.change(currentInput, { target: { value: '10' } });
+      fireEvent.change(currentInput, { target: { value: "10" } });
 
-      const calculateButton = screen.getByRole('button', { name: /calculate wire size/i });
+      const calculateButton = screen.getByRole("button", {
+        name: /calculate wire size/i,
+      });
       fireEvent.click(calculateButton);
 
       await waitFor(() => {
@@ -371,25 +387,31 @@ describe('DC Calculator Integration Tests', () => {
     });
   });
 
-  describe('Real-world Integration Scenarios', () => {
-    it('should handle RV electrical system (automotive + solar)', async () => {
+  describe("Real-world Integration Scenarios", () => {
+    it("should handle RV electrical system (automotive + solar)", async () => {
       // Test solar charging for RV batteries
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_SOLAR" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Solar panel to charge controller
-      fireEvent.change(screen.getByLabelText(/load current/i), { target: { value: '30' } });
-      fireEvent.change(screen.getByLabelText(/circuit length/i), { target: { value: '20' } });
-      
+      fireEvent.change(screen.getByLabelText(/load current/i), {
+        target: { value: "30" },
+      });
+      fireEvent.change(screen.getByLabelText(/circuit length/i), {
+        target: { value: "20" },
+      });
+
       // Set voltage to 12V (RV system)
       const voltageSelect = screen.getByLabelText(/system voltage/i);
       fireEvent.mouseDown(voltageSelect);
-      fireEvent.click(screen.getByText('12V DC'));
+      fireEvent.click(screen.getByText("12V DC"));
 
-      const calculateButton = screen.getByRole('button', { name: /calculate wire size/i });
+      const calculateButton = screen.getByRole("button", {
+        name: /calculate wire size/i,
+      });
       fireEvent.click(calculateButton);
 
       await waitFor(() => {
@@ -399,25 +421,33 @@ describe('DC Calculator Integration Tests', () => {
       });
     });
 
-    it('should handle marine navigation equipment', async () => {
+    it("should handle marine navigation equipment", async () => {
       render(
         <TestWrapper>
           <DCWireCalculator selectedStandard="DC_MARINE" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Low current navigation lights with long cable run
-      fireEvent.change(screen.getByLabelText(/load current/i), { target: { value: '2' } });
-      fireEvent.change(screen.getByLabelText(/circuit length/i), { target: { value: '80' } });
-      fireEvent.change(screen.getByLabelText(/ambient temperature/i), { target: { value: '5' } });
+      fireEvent.change(screen.getByLabelText(/load current/i), {
+        target: { value: "2" },
+      });
+      fireEvent.change(screen.getByLabelText(/circuit length/i), {
+        target: { value: "80" },
+      });
+      fireEvent.change(screen.getByLabelText(/ambient temperature/i), {
+        target: { value: "5" },
+      });
 
-      const calculateButton = screen.getByRole('button', { name: /calculate wire size/i });
+      const calculateButton = screen.getByRole("button", {
+        name: /calculate wire size/i,
+      });
       fireEvent.click(calculateButton);
 
       await waitFor(() => {
         // Should meet ABYC standards
         expect(screen.getByText(/compliance status/i)).toBeInTheDocument();
-        expect(screen.getByText(/AWG/)).toBeInTheDocument();
+        expect(screen.getAllByText(/AWG/)[0]).toBeInTheDocument();
       });
     });
   });
