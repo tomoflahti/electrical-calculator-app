@@ -29,6 +29,9 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Add security headers and optimizations
 COPY default.conf /etc/nginx/conf.d/default.conf
 
+# Validate nginx configuration
+RUN nginx -t
+
 # Expose port 80
 EXPOSE 80
 
