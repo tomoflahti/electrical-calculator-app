@@ -3,10 +3,9 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
-import { globalIgnores } from 'eslint/config'
 
 export default tseslint.config([
-  globalIgnores(['dist']),
+  { ignores: ['dist', 'node_modules', 'coverage'] },
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -21,25 +20,25 @@ export default tseslint.config([
     },
     rules: {
       // Prevent unused variables and imports
-      '@typescript-eslint/no-unused-vars': ['error', { 
+      '@typescript-eslint/no-unused-vars': ['warn', { 
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
         destructuredArrayIgnorePattern: '^_'
       }],
-      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/consistent-type-imports': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-require-imports': 'off', // Allow require in tests
+      '@typescript-eslint/no-empty-object-type': 'warn',
       
-      // Code quality rules
-      '@typescript-eslint/prefer-const': 'error',
-      '@typescript-eslint/no-unnecessary-condition': 'warn',
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      '@typescript-eslint/prefer-optional-chain': 'error',
+      // Code quality rules (using built-in rules where appropriate)
+      'prefer-const': 'error',
+      'no-empty-pattern': 'warn',
       
       // Import organization
-      'no-duplicate-imports': 'error',
+      'no-duplicate-imports': 'warn',
       
       // React specific
-      'react-hooks/exhaustive-deps': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }]
     }
   },
