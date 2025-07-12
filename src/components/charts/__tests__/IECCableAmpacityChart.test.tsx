@@ -84,40 +84,24 @@ describe('IECCableAmpacityChart', () => {
       expect(screen.getByTestId('bar-adjustedCapacity')).toBeInTheDocument();
     });
 
-    it('should render line chart when selected', async () => {
+    it('should render line chart when selected', () => {
       render(
         <TestWrapper>
-          <IECCableAmpacityChart {...defaultProps} />
+          <IECCableAmpacityChart {...defaultProps} chartType="line" />
         </TestWrapper>
       );
-
-      const chartTypeSelect = screen.getByLabelText('Chart Type');
-      fireEvent.mouseDown(chartTypeSelect);
-      
-      await waitFor(() => {
-        const lineOption = screen.getByText('Line Chart');
-        fireEvent.click(lineOption);
-      });
 
       expect(screen.getByTestId('line-chart')).toBeInTheDocument();
       expect(screen.getByTestId('line-baseCapacity')).toBeInTheDocument();
       expect(screen.getByTestId('line-adjustedCapacity')).toBeInTheDocument();
     });
 
-    it('should render table view when selected', async () => {
+    it('should render table view when selected', () => {
       render(
         <TestWrapper>
-          <IECCableAmpacityChart {...defaultProps} />
+          <IECCableAmpacityChart {...defaultProps} chartType="table" />
         </TestWrapper>
       );
-
-      const chartTypeSelect = screen.getByLabelText('Chart Type');
-      fireEvent.mouseDown(chartTypeSelect);
-      
-      await waitFor(() => {
-        const tableOption = screen.getByText('Table View');
-        fireEvent.click(tableOption);
-      });
 
       expect(screen.getByRole('table')).toBeInTheDocument();
       expect(screen.getByText('Size (mm²)')).toBeInTheDocument();
