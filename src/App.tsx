@@ -12,6 +12,8 @@ const VoltageDropCalculator = lazy(() => import('./components/VoltageDropCalcula
 const ConduitFillCalculator = lazy(() => import('./components/ConduitFillCalculator'))
 const DCWireCalculator = lazy(() => import('./components/DCWireCalculator'))
 const DCBreakerCalculator = lazy(() => import('./components/DCBreakerCalculator'))
+const IECReferenceChartsPage = lazy(() => import('./pages/IECReferenceChartsPage'))
+const NECReferenceChartsPage = lazy(() => import('./pages/NECReferenceChartsPage'))
 const BS7671ReferenceChartsPage = lazy(() => import('./pages/BS7671ReferenceChartsPage'))
 
 // Preload the most commonly used calculator after initial load
@@ -78,6 +80,14 @@ function App() {
         return wrapWithErrorBoundary(
           <DCBreakerCalculator selectedStandard={selectedStandard} />
         )
+      case 'iec-ref-charts':
+        return wrapWithErrorBoundary(
+          <IECReferenceChartsPage />
+        )
+      case 'nec-ref-charts':
+        return wrapWithErrorBoundary(
+          <NECReferenceChartsPage />
+        )
       case 'bs7671-ref-charts':
         return wrapWithErrorBoundary(
           <BS7671ReferenceChartsPage />
@@ -94,7 +104,7 @@ function App() {
       <Layout activeTab={activeTab} onTabChange={setActiveTab}>
         <Box>
           {/* Only show StandardSelector for AC calculators */}
-          {activeTab !== 'dc-calc' && activeTab !== 'dc-breaker-calc' && activeTab !== 'bs7671-ref-charts' && (
+          {activeTab !== 'dc-calc' && activeTab !== 'dc-breaker-calc' && activeTab !== 'iec-ref-charts' && activeTab !== 'nec-ref-charts' && activeTab !== 'bs7671-ref-charts' && (
             <StandardSelector 
               selectedStandard={selectedStandard} 
               onStandardChange={setSelectedStandard}
