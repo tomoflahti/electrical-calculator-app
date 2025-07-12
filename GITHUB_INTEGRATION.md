@@ -8,7 +8,7 @@ This guide helps you set up GitHub integration for automatic deployments of the 
 
 ✅ Repository created at: `https://github.com/tomoflahti/electrical-calculator-app.git`
 ✅ Initial commit with all application files ready
-✅ GitHub Actions workflows configured for master/main branches
+✅ GitHub Actions workflows configured for main branch
 
 ## Required GitHub Secrets
 
@@ -55,7 +55,7 @@ WEBPAGETEST_API_KEY=your_webpagetest_key
 ## GitHub Actions Workflows
 
 ### 1. Main Deployment Workflow (`deploy.yml`)
-- **Triggers**: Push to master/main branches
+- **Triggers**: Push to main branch
 - **Actions**: 
   - ✅ Run tests and build
   - ✅ Deploy to Netlify
@@ -63,7 +63,7 @@ WEBPAGETEST_API_KEY=your_webpagetest_key
   - ✅ Deploy to AWS S3
 
 ### 2. Comprehensive CI/CD Pipeline (`ci-cd.yml`)
-- **Triggers**: Push/PR to master/main/develop branches
+- **Triggers**: Push/PR to main/develop branches
 - **Actions**:
   - ✅ Unit tests with coverage
   - ✅ E2E tests with Playwright
@@ -80,7 +80,7 @@ gh auth login                    # GitHub CLI
 # OR use SSH/Personal Access Token
 
 # Push the repository
-git push -u origin master
+git push -u origin main
 ```
 
 ### 2. Set up Netlify Auto-Deploy
@@ -101,14 +101,14 @@ Add the `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` secrets to enable GitHub Acti
 echo "# Test" >> README.md
 git add README.md
 git commit -m "Test GitHub Actions integration"
-git push origin master
+git push origin main
 ```
 
 ## Verification Checklist
 
 After setup, verify these work:
 
-- [ ] GitHub Actions runs on push to master
+- [ ] GitHub Actions runs on push to main
 - [ ] Tests pass in GitHub Actions
 - [ ] Build artifacts are created
 - [ ] Netlify deployment succeeds
@@ -118,7 +118,7 @@ After setup, verify these work:
 ## Deployment Environments
 
 ### Production
-- **Trigger**: Push to `master` branch
+- **Trigger**: Push to `main` branch
 - **URL**: Your main Netlify site
 - **Features**: Full CI/CD pipeline, security scans, performance monitoring
 
@@ -128,7 +128,7 @@ After setup, verify these work:
 - **Features**: Deploy previews, testing environment
 
 ### Pull Request Previews
-- **Trigger**: Pull requests to master
+- **Trigger**: Pull requests to main
 - **URL**: Temporary Netlify preview URLs
 - **Features**: Review apps for testing changes
 
