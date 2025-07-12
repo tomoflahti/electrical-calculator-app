@@ -38,8 +38,6 @@ const menuItems = [
   { id: 'conduit-fill', label: 'Conduit Fill Calculator', icon: <Settings /> },
   { id: 'dc-calc', label: 'DC Wire Calculator', icon: <Battery4Bar /> },
   { id: 'dc-breaker-calc', label: 'DC Breaker Calculator', icon: <ElectricalServices /> },
-  { id: 'iec-ref-charts', label: 'IEC Reference Charts', icon: <BarChart /> },
-  { id: 'nec-ref-charts', label: 'NEC Reference Charts', icon: <BarChart /> },
   { id: 'bs7671-ref-charts', label: 'BS7671 Reference Charts', icon: <BarChart /> }
 ];
 
