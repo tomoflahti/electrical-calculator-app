@@ -38,7 +38,7 @@ const menuItems = [
   { id: 'conduit-fill', label: 'Conduit Fill Calculator', icon: <Settings /> },
   { id: 'dc-calc', label: 'DC Wire Calculator', icon: <Battery4Bar /> },
   { id: 'dc-breaker-calc', label: 'DC Breaker Calculator', icon: <ElectricalServices /> },
-  { id: 'bs7671-ref-charts', label: 'BS7671 Reference Charts', icon: <BarChart /> }
+  { id: 'reference-charts', label: 'Reference Charts', icon: <BarChart /> }
 ];
 
 export default function Layout({ children, activeTab, onTabChange }: LayoutProps) {
