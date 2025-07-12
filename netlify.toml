@@ -1,7 +1,7 @@
 [build]
   publish = "dist"
   command = "npm run build"
-  ignore = "git diff --quiet HEAD^ HEAD -- package.json package-lock.json || exit 1"
+  ignore = "git diff --quiet HEAD^ HEAD -- package.json package-lock.json src/ || exit 1"
 
 # Environment variables for build
 [build.environment]
