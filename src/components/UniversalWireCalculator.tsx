@@ -15,14 +15,14 @@ import {
   Divider,
   Chip,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  GridLegacy as Grid
 } from '@mui/material';
-import { GridLegacy as Grid } from '@mui/material';
 import { Calculate, CheckCircle, Error } from '@mui/icons-material';
 import { calculateWireSize, type WireCalculationInput as RouterWireInput, type WireCalculationResult as RouterWireResult } from '../utils/calculations/wireCalculatorRouter';
 import { getVoltageOptions, getInstallationMethods, formatWireSize } from '../utils/conversions';
 import { isDCStandard } from '../standards';
-import type { ElectricalStandardId, CableCalculationInput, CableCalculationResult, DCCalculationResult } from '../types/standards';
+import type { ElectricalStandardId, CableCalculationInput, CableCalculationResult, DCCalculationResult, DCVoltageSystem, DCApplicationType } from '../types/standards';
 import type { WireCalculationResult } from '../types';
 
 interface UniversalWireCalculatorProps {
@@ -94,7 +94,7 @@ export default function UniversalWireCalculator({ selectedStandard }: UniversalW
       voltageSystem: defaultVoltageSystem as 'single' | 'three-phase',
       installationMethod: selectedStandard === 'NEC' ? 'conduit' : 'A1'
     }));
-  }, [selectedStandard]);
+  }, [selectedStandard, input.voltageSystem]);
 
   const handleCalculate = () => {
     try {
@@ -115,8 +115,8 @@ export default function UniversalWireCalculator({ selectedStandard }: UniversalW
         
         // DC-specific fields (if applicable)
         ...(isCurrentStandardDC && {
-          dcVoltageSystem: `${input.voltage}V` as any,
-          dcApplicationType: selectedStandard.replace('DC_', '').toLowerCase() as any,
+          dcVoltageSystem: `${input.voltage}V` as DCVoltageSystem,
+          dcApplicationType: selectedStandard.replace('DC_', '').toLowerCase() as DCApplicationType,
           loadType: 'continuous',
           allowableVoltageDropPercent: 2
         }),
@@ -141,7 +141,7 @@ export default function UniversalWireCalculator({ selectedStandard }: UniversalW
     }
   };
 
-  const handleInputChange = (field: keyof CableCalculationInput, value: any) => {
+  const handleInputChange = (field: keyof CableCalculationInput, value: string | number) => {
     setInput(prev => ({
       ...prev,
       [field]: value
@@ -477,7 +477,7 @@ export default function UniversalWireCalculator({ selectedStandard }: UniversalW
                             ? result.currentCapacity  // Router result format
                             : 'ampacity' in result 
                               ? result.ampacity       // DC result format
-                              : (result as any).currentCapacity || 0  // IEC result format or fallback
+                              : (result as WireCalculationResult & { currentCapacity?: number }).currentCapacity || 0  // IEC result format or fallback
                         }A
                       </Typography>
                     </Grid>

@@ -18,9 +18,9 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  GridLegacy as Grid
 } from '@mui/material';
-import { GridLegacy as Grid } from '@mui/material';
 import { Calculate, Assessment } from '@mui/icons-material';
 import VoltageDropChart from './charts/VoltageDropChart';
 import ConduitFillChart from './charts/ConduitFillChart';
@@ -83,7 +83,7 @@ const IECVoltageDropCalculator: React.FC = () => {
     { gauge: '2.5', count: 2, insulationType: 'XLPE' as const }
   ]);
 
-  const handleInputChange = (field: keyof CalculationInputs, value: any) => {
+  const handleInputChange = (field: keyof CalculationInputs, value: string | number) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
@@ -95,7 +95,7 @@ const IECVoltageDropCalculator: React.FC = () => {
     setWireConfig(prev => prev.filter((_, i) => i !== index));
   };
 
-  const updateWire = (index: number, field: string, value: any) => {
+  const updateWire = (index: number, field: string, value: string | number) => {
     setWireConfig(prev => prev.map((wire, i) => 
       i === index ? { ...wire, [field]: value } : wire
     ));

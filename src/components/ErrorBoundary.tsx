@@ -1,4 +1,4 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Box, Typography, Button, Alert, Container } from '@mui/material';
 import { Refresh, BugReport } from '@mui/icons-material';
 
