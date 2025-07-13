@@ -177,7 +177,14 @@ const VoltageDropChart: React.FC<VoltageDropChartProps> = ({
             <InputLabel>Metric</InputLabel>
             <Select
               value={selectedMetric}
-              onChange={(e) => setSelectedMetric(e.target.value as any)}
+              onChange={(e) =>
+                setSelectedMetric(
+                  e.target.value as
+                    | "voltageDropPercent"
+                    | "powerLossWatts"
+                    | "efficiencyPercent",
+                )
+              }
               label="Metric"
             >
               <MenuItem value="voltageDropPercent">Voltage Drop (%)</MenuItem>
