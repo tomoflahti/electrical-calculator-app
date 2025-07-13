@@ -11,31 +11,37 @@ import "@testing-library/jest-dom";
 
 // Mock recharts to avoid canvas rendering issues
 jest.mock("recharts", () => ({
-  BarChart: ({ children }: any) => (
+  BarChart: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid="bar-chart">{children}</div>
   ),
-  Bar: ({ dataKey, name }: any) => (
+  Bar: ({ dataKey, name }: { dataKey?: string; name?: string }) => (
     <div data-testid={`bar-${dataKey}`} data-name={name} />
   ),
-  LineChart: ({ children }: any) => (
+  LineChart: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid="line-chart">{children}</div>
   ),
-  Line: ({ dataKey, name }: any) => (
+  Line: ({ dataKey, name }: { dataKey?: string; name?: string }) => (
     <div data-testid={`line-${dataKey}`} data-name={name} />
   ),
-  XAxis: ({ dataKey, label }: any) => (
+  XAxis: ({
+    dataKey,
+    label,
+  }: {
+    dataKey?: string;
+    label?: { value?: string };
+  }) => (
     <div data-testid="x-axis" data-key={dataKey} data-label={label?.value} />
   ),
-  YAxis: ({ label }: any) => (
+  YAxis: ({ label }: { label?: { value?: string } }) => (
     <div data-testid="y-axis" data-label={label?.value} />
   ),
   CartesianGrid: () => <div data-testid="grid" />,
   Tooltip: () => <div data-testid="tooltip" />,
   Legend: () => <div data-testid="legend" />,
-  ResponsiveContainer: ({ children }: any) => (
+  ResponsiveContainer: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid="responsive-container">{children}</div>
   ),
-  ReferenceLine: ({ y, label }: any) => (
+  ReferenceLine: ({ y, label }: { y?: number; label?: string }) => (
     <div data-testid="reference-line" data-y={y} data-label={label} />
   ),
 }));
