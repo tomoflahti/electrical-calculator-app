@@ -448,7 +448,7 @@ export default function UniversalWireCalculator({
                   fullWidth
                   size="large"
                 >
-                  Calculate Cable Size
+                  Calculate Wire Size
                 </Button>
               </Box>
             </CardContent>

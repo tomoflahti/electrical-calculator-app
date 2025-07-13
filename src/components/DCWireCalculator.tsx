@@ -109,7 +109,14 @@ export default function DCWireCalculator({
     value: string,
   ) => {
     const processedValue = handleNumberInput(value, {
-      min: field === "current" ? 0.1 : field === "length" ? 1 : 0,
+      min:
+        field === "current"
+          ? 0.1
+          : field === "length"
+            ? 1
+            : field === "ambientTemperature"
+              ? -40
+              : 0,
       allowDecimals: true,
       allowEmpty: true,
       emptyValue: "",
@@ -280,6 +287,7 @@ export default function DCWireCalculator({
                     }
                     fullWidth
                     required
+                    data-testid="load-current-input"
                     inputProps={{
                       inputMode: "decimal",
                       pattern: "[0-9]*\\.?[0-9]*",
@@ -298,6 +306,7 @@ export default function DCWireCalculator({
                     }
                     fullWidth
                     required
+                    data-testid="circuit-length-input"
                     inputProps={{
                       inputMode: "decimal",
                       pattern: "[0-9]*\\.?[0-9]*",
@@ -367,6 +376,7 @@ export default function DCWireCalculator({
                       )
                     }
                     fullWidth
+                    data-testid="ambient-temperature-input"
                     inputProps={{
                       inputMode: "decimal",
                       pattern: "[0-9-]*\\.?[0-9]*",
