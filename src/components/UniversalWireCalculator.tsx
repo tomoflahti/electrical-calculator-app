@@ -37,6 +37,7 @@ import type {
   DCCalculationResult,
   DCVoltageSystem,
   DCApplicationType,
+  InstallationMethod,
 } from "../types/standards";
 import type { WireCalculationResult } from "../types";
 
@@ -56,17 +57,41 @@ interface FormInputState {
 export default function UniversalWireCalculator({
   selectedStandard,
 }: UniversalWireCalculatorProps) {
-  const [input, setInput] = useState<CableCalculationInput>({
-    standard: selectedStandard,
-    loadCurrent: 20,
-    circuitLength: 100,
-    voltage: selectedStandard === "NEC" ? 120 : 230,
-    voltageSystem: "single",
-    installationMethod: selectedStandard === "NEC" ? "conduit" : "A1",
-    conductorMaterial: "copper",
-    ambientTemperature: 30,
-    numberOfConductors: 3,
-    powerFactor: 0.8,
+  const [input, setInput] = useState<CableCalculationInput>(() => {
+    const voltageOpts = getVoltageOptions(selectedStandard);
+    const installationOpts = getInstallationMethods(selectedStandard);
+    const isDC = isDCStandard(selectedStandard);
+
+    let initialVoltage: number;
+    if (selectedStandard === "NEC") {
+      initialVoltage = 120;
+    } else if (isDC) {
+      initialVoltage = voltageOpts.dc?.[0] || 12;
+    } else {
+      initialVoltage = 230;
+    }
+
+    let initialInstallationMethod: string;
+    if (selectedStandard === "NEC") {
+      initialInstallationMethod = "conduit";
+    } else if (isDC) {
+      initialInstallationMethod = installationOpts[0]?.id || "automotive";
+    } else {
+      initialInstallationMethod = "A1";
+    }
+
+    return {
+      standard: selectedStandard,
+      loadCurrent: 20,
+      circuitLength: 100,
+      voltage: initialVoltage,
+      voltageSystem: "single",
+      installationMethod: initialInstallationMethod as InstallationMethod,
+      conductorMaterial: "copper",
+      ambientTemperature: 30,
+      numberOfConductors: 3,
+      powerFactor: 0.8,
+    };
   });
 
   // Form input state for better UX (prevents leading zeros and empty->0 conversion)
@@ -95,6 +120,7 @@ export default function UniversalWireCalculator({
   // Update input when standard changes
   useEffect(() => {
     const voltageOpts = getVoltageOptions(selectedStandard);
+    const installationOpts = getInstallationMethods(selectedStandard);
     const isDC = isDCStandard(selectedStandard);
 
     let defaultVoltage: number;
@@ -113,12 +139,21 @@ export default function UniversalWireCalculator({
       defaultVoltageSystem = input.voltageSystem;
     }
 
+    let defaultInstallationMethod: string;
+    if (selectedStandard === "NEC") {
+      defaultInstallationMethod = "conduit";
+    } else if (isDC) {
+      defaultInstallationMethod = installationOpts[0]?.id || "automotive";
+    } else {
+      defaultInstallationMethod = "A1";
+    }
+
     setInput((prev) => ({
       ...prev,
       standard: selectedStandard,
       voltage: defaultVoltage,
       voltageSystem: defaultVoltageSystem as "single" | "three-phase",
-      installationMethod: selectedStandard === "NEC" ? "conduit" : "A1",
+      installationMethod: defaultInstallationMethod as InstallationMethod,
     }));
   }, [selectedStandard, input.voltageSystem]);
 
@@ -299,6 +334,7 @@ export default function UniversalWireCalculator({
                       labelId="voltage-label"
                       value={input.voltage}
                       label={isCurrentStandardDC ? "DC Voltage" : "Voltage"}
+                      data-testid="voltage-selector"
                       onChange={(e) =>
                         handleInputChange("voltage", Number(e.target.value))
                       }
