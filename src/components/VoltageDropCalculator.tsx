@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -12,148 +12,173 @@ import {
   Box,
   Alert,
   Divider,
-  Chip
-} from '@mui/material';
-import { GridLegacy as Grid } from '@mui/material';
-import { Calculate, CheckCircle, Error as ErrorIcon } from '@mui/icons-material';
-import { calculateWireSize } from '../utils/calculations/wireCalculatorRouter';
-import type { VoltageDropInput, VoltageDropResult } from '../types';
-import type { ElectricalStandardId } from '../types/standards';
-import { WIRE_GAUGES } from '../utils/necTables';
-import { IEC_CABLE_CROSS_SECTIONS } from '../standards/iec/cableTables';
-import { getVoltageOptions, feetToMeters, metersToFeet } from '../utils/conversions';
+  Chip,
+  GridLegacy as Grid,
+} from "@mui/material";
+import {
+  Calculate,
+  CheckCircle,
+  Error as ErrorIcon,
+} from "@mui/icons-material";
+import { calculateWireSize } from "../utils/calculations/wireCalculatorRouter";
+import type { VoltageDropInput, VoltageDropResult } from "../types";
+import type { ElectricalStandardId } from "../types/standards";
+import { WIRE_GAUGES } from "../utils/necTables";
+import { IEC_CABLE_CROSS_SECTIONS } from "../standards/iec/cableTables";
+import {
+  getVoltageOptions,
+  feetToMeters,
+  metersToFeet,
+} from "../utils/conversions";
 
 interface VoltageDropCalculatorProps {
   selectedStandard?: ElectricalStandardId;
 }
 
-export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: VoltageDropCalculatorProps) {
+export default function VoltageDropCalculator({
+  selectedStandard = "NEC",
+}: VoltageDropCalculatorProps) {
   const [input, setInput] = useState<VoltageDropInput>({
-    wireGauge: selectedStandard === 'IEC' ? '2.5' : '12',
+    wireGauge: selectedStandard === "IEC" ? "2.5" : "12",
     current: 20,
-    length: selectedStandard === 'IEC' ? 30.48 : 100,
-    voltage: selectedStandard === 'IEC' ? 230 : 120,
-    conductorMaterial: 'copper',
-    wireType: 'single'
+    length: selectedStandard === "IEC" ? 30.48 : 100,
+    voltage: selectedStandard === "IEC" ? 230 : 120,
+    conductorMaterial: "copper",
+    wireType: "single",
   });
 
   const [result, setResult] = useState<VoltageDropResult | null>(null);
-  const [error, setError] = useState<string>('');
-  const [prevStandard, setPrevStandard] = useState<ElectricalStandardId>(selectedStandard);
+  const [error, setError] = useState<string>("");
+  const [prevStandard, setPrevStandard] =
+    useState<ElectricalStandardId>(selectedStandard);
 
   // Handle standard switching and unit conversion
   useEffect(() => {
     if (selectedStandard !== prevStandard) {
       // Clear results when standard changes
       setResult(null);
-      setError('');
-      
+      setError("");
+
       // Convert units when switching standards
-      setInput(prev => {
+      setInput((prev) => {
         const newInput = { ...prev };
-        
+
         // Convert length units
-        if (prevStandard === 'NEC' && selectedStandard === 'IEC') {
+        if (prevStandard === "NEC" && selectedStandard === "IEC") {
           newInput.length = feetToMeters(prev.length);
           // Convert AWG to mm²
-          if (prev.wireGauge === '14') newInput.wireGauge = '2.5';
-          else if (prev.wireGauge === '12') newInput.wireGauge = '4';
-          else if (prev.wireGauge === '10') newInput.wireGauge = '6';
-          else if (prev.wireGauge === '8') newInput.wireGauge = '10';
-          else newInput.wireGauge = '2.5';
+          if (prev.wireGauge === "14") newInput.wireGauge = "2.5";
+          else if (prev.wireGauge === "12") newInput.wireGauge = "4";
+          else if (prev.wireGauge === "10") newInput.wireGauge = "6";
+          else if (prev.wireGauge === "8") newInput.wireGauge = "10";
+          else newInput.wireGauge = "2.5";
           // Convert voltage
           if (prev.voltage === 120) newInput.voltage = 230;
           else if (prev.voltage === 240) newInput.voltage = 400;
           else if (prev.voltage === 277) newInput.voltage = 400;
           else if (prev.voltage === 480) newInput.voltage = 400;
-        } else if (prevStandard === 'IEC' && selectedStandard === 'NEC') {
+        } else if (prevStandard === "IEC" && selectedStandard === "NEC") {
           newInput.length = metersToFeet(prev.length);
           // Convert mm² to AWG
-          if (prev.wireGauge === '2.5') newInput.wireGauge = '14';
-          else if (prev.wireGauge === '4') newInput.wireGauge = '12';
-          else if (prev.wireGauge === '6') newInput.wireGauge = '10';
-          else if (prev.wireGauge === '10') newInput.wireGauge = '8';
-          else newInput.wireGauge = '12';
+          if (prev.wireGauge === "2.5") newInput.wireGauge = "14";
+          else if (prev.wireGauge === "4") newInput.wireGauge = "12";
+          else if (prev.wireGauge === "6") newInput.wireGauge = "10";
+          else if (prev.wireGauge === "10") newInput.wireGauge = "8";
+          else newInput.wireGauge = "12";
           // Convert voltage
           if (prev.voltage === 230) newInput.voltage = 120;
           else if (prev.voltage === 400) newInput.voltage = 240;
         }
-        
+
         return newInput;
       });
-      
+
       setPrevStandard(selectedStandard);
     }
   }, [selectedStandard, prevStandard]);
 
   const handleCalculate = () => {
     try {
-      setError('');
-      
+      setError("");
+
       // Use the unified wire calculator router
       const routerResult = calculateWireSize({
-        standard: selectedStandard || 'NEC',
+        standard: selectedStandard || "NEC",
         loadCurrent: input.current,
         circuitLength: input.length,
         voltage: input.voltage,
-        voltageSystem: input.wireType === 'three-phase' ? 'three-phase' : 'single',
+        voltageSystem:
+          input.wireType === "three-phase" ? "three-phase" : "single",
         conductorMaterial: input.conductorMaterial,
         powerFactor: 0.8,
         ambientTemperature: 30,
-        installationMethod: selectedStandard === 'IEC' ? 'B1' : selectedStandard === 'BS7671' ? 'A1' : 'conduit',
-        temperatureRating: selectedStandard === 'NEC' ? 75 : undefined,
-        numberOfConductors: 3
+        installationMethod:
+          selectedStandard === "IEC"
+            ? "B1"
+            : selectedStandard === "BS7671"
+              ? "A1"
+              : "conduit",
+        temperatureRating: selectedStandard === "NEC" ? 75 : undefined,
+        numberOfConductors: 3,
       });
-      
+
       // Convert router result to VoltageDropResult format
       const calculationResult = {
         voltageDropPercent: routerResult.voltageDropPercent,
         voltageDropVolts: routerResult.voltageDropVolts,
         voltageAtLoad: input.voltage - routerResult.voltageDropVolts,
-        compliance: routerResult.compliance.voltageDropCompliant
+        compliance: routerResult.compliance.voltageDropCompliant,
       };
-      
+
       setResult(calculationResult);
     } catch (err) {
-      const errorMessage = (err as Error)?.message || 'Calculation failed';
+      const errorMessage = (err as Error)?.message || "Calculation failed";
       setError(errorMessage);
       setResult(null);
     }
   };
 
-  const handleInputChange = (field: keyof VoltageDropInput, value: any) => {
-    setInput(prev => ({
+  const handleInputChange = (
+    field: keyof VoltageDropInput,
+    value: string | number,
+  ) => {
+    setInput((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
     // Clear results when input changes
     setResult(null);
-    setError('');
+    setError("");
   };
 
   // Get wire options based on standard
   const getWireOptions = () => {
-    if (selectedStandard === 'IEC') {
-      return IEC_CABLE_CROSS_SECTIONS.map(cable => ({
+    if (selectedStandard === "IEC") {
+      return IEC_CABLE_CROSS_SECTIONS.map((cable) => ({
         value: cable.size,
-        label: `${cable.size} mm²`
+        label: `${cable.size} mm²`,
       }));
     } else {
-      return WIRE_GAUGES.map(wire => ({
+      return WIRE_GAUGES.map((wire) => ({
         value: wire.awg,
-        label: `${wire.awg} AWG`
+        label: `${wire.awg} AWG`,
       }));
     }
   };
 
   // Get voltage options based on standard
-  const voltageOptions = getVoltageOptions(selectedStandard === 'IEC' ? 'IEC' : 'NEC');
-  const allVoltageOptions = [...voltageOptions.single, ...voltageOptions.threephase];
+  const voltageOptions = getVoltageOptions(
+    selectedStandard === "IEC" ? "IEC" : "NEC",
+  );
+  const allVoltageOptions = [
+    ...voltageOptions.single,
+    ...voltageOptions.threephase,
+  ];
 
   // Get unit labels based on standard
-  const lengthUnit = selectedStandard === 'IEC' ? 'm' : 'ft';
-  const wireLabel = selectedStandard === 'IEC' ? 'Cable Size' : 'Wire Gauge';
-  const standardName = selectedStandard === 'IEC' ? 'IEC 60364' : 'NEC';
+  const lengthUnit = selectedStandard === "IEC" ? "m" : "ft";
+  const wireLabel = selectedStandard === "IEC" ? "Cable Size" : "Wire Gauge";
+  const standardName = selectedStandard === "IEC" ? "IEC 60364" : "NEC";
 
   return (
     <Box>
@@ -161,14 +186,11 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
         <Typography variant="h4" gutterBottom sx={{ mb: 0 }}>
           Voltage Drop Calculator
         </Typography>
-        <Chip 
-          label={standardName}
-          color="primary"
-          variant="outlined"
-        />
+        <Chip label={standardName} color="primary" variant="outlined" />
       </Box>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Calculate voltage drop for a specific wire gauge and circuit configuration using {standardName} standards.
+        Calculate voltage drop for a specific wire gauge and circuit
+        configuration using {standardName} standards.
       </Typography>
 
       <Grid container spacing={3}>
@@ -178,7 +200,7 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
               <Typography variant="h6" gutterBottom>
                 Input Parameters
               </Typography>
-              
+
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
@@ -186,9 +208,11 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
                     <Select
                       value={input.wireGauge}
                       label={wireLabel}
-                      onChange={(e) => handleInputChange('wireGauge', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("wireGauge", e.target.value)
+                      }
                     >
-                      {getWireOptions().map(option => (
+                      {getWireOptions().map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                           {option.label}
                         </MenuItem>
@@ -196,39 +220,45 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
                     </Select>
                   </FormControl>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Current (A)"
                     type="number"
                     value={input.current}
-                    onChange={(e) => handleInputChange('current', Number(e.target.value))}
+                    onChange={(e) =>
+                      handleInputChange("current", Number(e.target.value))
+                    }
                     fullWidth
                     required
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label={`Length (${lengthUnit})`}
                     type="number"
                     value={input.length}
-                    onChange={(e) => handleInputChange('length', Number(e.target.value))}
+                    onChange={(e) =>
+                      handleInputChange("length", Number(e.target.value))
+                    }
                     fullWidth
                     required
-                    inputProps={{ min: 0, step: lengthUnit === 'm' ? 0.1 : 1 }}
+                    inputProps={{ min: 0, step: lengthUnit === "m" ? 0.1 : 1 }}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel>Voltage</InputLabel>
                     <Select
                       value={input.voltage}
                       label="Voltage"
-                      onChange={(e) => handleInputChange('voltage', Number(e.target.value))}
+                      onChange={(e) =>
+                        handleInputChange("voltage", Number(e.target.value))
+                      }
                     >
-                      {allVoltageOptions.map(voltage => (
+                      {allVoltageOptions.map((voltage) => (
                         <MenuItem key={voltage} value={voltage}>
                           {voltage}V
                         </MenuItem>
@@ -236,28 +266,32 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
                     </Select>
                   </FormControl>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel>Conductor Material</InputLabel>
                     <Select
                       value={input.conductorMaterial}
                       label="Conductor Material"
-                      onChange={(e) => handleInputChange('conductorMaterial', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("conductorMaterial", e.target.value)
+                      }
                     >
                       <MenuItem value="copper">Copper</MenuItem>
                       <MenuItem value="aluminum">Aluminum</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel>Wire Type</InputLabel>
                     <Select
                       value={input.wireType}
                       label="Wire Type"
-                      onChange={(e) => handleInputChange('wireType', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("wireType", e.target.value)
+                      }
                     >
                       <MenuItem value="single">Single Phase</MenuItem>
                       <MenuItem value="three-phase">Three Phase</MenuItem>
@@ -265,7 +299,7 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
                   </FormControl>
                 </Grid>
               </Grid>
-              
+
               <Box mt={3}>
                 <Button
                   variant="contained"
@@ -287,13 +321,13 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
               <Typography variant="h6" gutterBottom>
                 Calculation Results
               </Typography>
-              
+
               {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                   {error}
                 </Alert>
               )}
-              
+
               {result && (
                 <Box>
                   <Grid container spacing={2}>
@@ -303,17 +337,23 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
                           {result.voltageDropPercent.toFixed(2)}%
                         </Typography>
                         <Chip
-                          icon={result.compliance ? <CheckCircle /> : <ErrorIcon />}
-                          label={result.compliance ? "Within Limits" : "Exceeds Limits"}
+                          icon={
+                            result.compliance ? <CheckCircle /> : <ErrorIcon />
+                          }
+                          label={
+                            result.compliance
+                              ? "Within Limits"
+                              : "Exceeds Limits"
+                          }
                           color={result.compliance ? "success" : "error"}
                         />
                       </Box>
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <Divider sx={{ my: 2 }} />
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <Typography variant="body2" color="text.secondary">
                         Voltage Drop (Volts)
@@ -322,7 +362,7 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
                         {result.voltageDropVolts.toFixed(2)}V
                       </Typography>
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <Typography variant="body2" color="text.secondary">
                         Voltage at Load
@@ -332,29 +372,36 @@ export default function VoltageDropCalculator({ selectedStandard = 'NEC' }: Volt
                       </Typography>
                     </Grid>
                   </Grid>
-                  
+
                   <Box mt={3}>
-                    <Alert 
+                    <Alert
                       severity={result.compliance ? "success" : "warning"}
                       sx={{ mb: 2 }}
                     >
-                      {result.compliance 
+                      {result.compliance
                         ? `Voltage drop is within ${standardName} recommended limits`
-                        : `Voltage drop exceeds ${standardName} recommended limits`
-                      }
+                        : `Voltage drop exceeds ${standardName} recommended limits`}
                     </Alert>
-                    
+
                     <Typography variant="body2" color="text.secondary">
-                      {selectedStandard === 'IEC' ? (
-                        <><strong>IEC 60364 limits:</strong><br />
-                        • Final circuits: ≤4% voltage drop<br />
-                        • Distribution circuits: ≤2% voltage drop<br />
-                        • Total system: ≤6% voltage drop</>
+                      {selectedStandard === "IEC" ? (
+                        <>
+                          <strong>IEC 60364 limits:</strong>
+                          <br />
+                          • Final circuits: ≤4% voltage drop
+                          <br />
+                          • Distribution circuits: ≤2% voltage drop
+                          <br />• Total system: ≤6% voltage drop
+                        </>
                       ) : (
-                        <><strong>NEC recommended limits:</strong><br />
-                        • Branch circuits: ≤3% voltage drop<br />
-                        • Feeders: ≤2.5% voltage drop<br />
-                        • Total system: ≤5% voltage drop</>
+                        <>
+                          <strong>NEC recommended limits:</strong>
+                          <br />
+                          • Branch circuits: ≤3% voltage drop
+                          <br />
+                          • Feeders: ≤2.5% voltage drop
+                          <br />• Total system: ≤5% voltage drop
+                        </>
                       )}
                     </Typography>
                   </Box>

@@ -19,7 +19,7 @@ export interface WireCalculationInput {
   circuitLength: number;
   voltage: number;
   temperatureRating: 60 | 75 | 90;
-  conductorMaterial: 'copper' | 'aluminum';
+  conductorMaterial: "copper" | "aluminum";
   conduitType?: string;
   ambientTemperature?: number;
   numberOfConductors?: number;
@@ -44,8 +44,8 @@ export interface VoltageDropInput {
   current: number;
   length: number;
   voltage: number;
-  conductorMaterial: 'copper' | 'aluminum';
-  wireType: 'single' | 'three-phase';
+  conductorMaterial: "copper" | "aluminum";
+  wireType: "single" | "three-phase";
 }
 
 export interface VoltageDropResult {
@@ -77,9 +77,9 @@ export interface IECConduitFillInput {
   wires: Array<{
     gauge: string; // Metric sizes: '1.5', '2.5', '4', '6', '10', '16', '25', etc. (mm²)
     count: number;
-    insulationType: 'PVC' | 'XLPE';
+    insulationType: "PVC" | "XLPE";
   }>;
-  conduitType: 'PVC' | 'Steel';
+  conduitType: "PVC" | "Steel";
 }
 
 export interface IECConduitFillResult {
@@ -107,9 +107,17 @@ export interface Project {
   name: string;
   description: string;
   calculations: Array<{
-    type: 'wire' | 'voltage-drop' | 'conduit' | 'dc-wire';
-    input: any;
-    result: any;
+    type: "wire" | "voltage-drop" | "conduit" | "dc-wire";
+    input:
+      | WireCalculationInput
+      | VoltageDropInput
+      | NECConduitFillInput
+      | IECConduitFillInput;
+    result:
+      | WireCalculationResult
+      | VoltageDropResult
+      | NECConduitFillResult
+      | IECConduitFillResult;
     timestamp: Date;
   }>;
   createdAt: Date;
@@ -124,5 +132,5 @@ export type {
   DCCalculationInput,
   DCCalculationResult,
   DCWireSpecification,
-  DCApplicationStandard
-} from './standards';
+  DCApplicationStandard,
+} from "./standards";

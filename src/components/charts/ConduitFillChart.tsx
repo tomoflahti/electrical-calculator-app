@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -11,42 +11,41 @@ import {
   ReferenceLine,
   PieChart,
   Pie,
-  Cell
-} from 'recharts';
-import { 
-  Box, 
-  Card, 
-  CardContent, 
-  Typography, 
- 
+  Cell,
+} from "recharts";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
   Chip,
   FormControl,
   InputLabel,
   Select,
-  MenuItem
-} from '@mui/material';
-import { GridLegacy as Grid } from '@mui/material';
+  MenuItem,
+  GridLegacy as Grid,
+} from "@mui/material";
 // Removed unused import
-import { generateConduitFillComparisonData } from '../../utils/calculations/iecConduitFill';
+import { generateConduitFillComparisonData } from "../../utils/calculations/iecConduitFill";
 
 interface ConduitFillChartProps {
   wires: Array<{
     gauge: string;
     count: number;
-    insulationType: 'PVC' | 'XLPE';
+    insulationType: "PVC" | "XLPE";
   }>;
-  conduitType?: 'PVC' | 'Steel';
+  conduitType?: "PVC" | "Steel";
   selectedConduitSize?: string;
   showComparison?: boolean;
 }
 
 const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
   wires,
-  conduitType = 'PVC',
+  conduitType = "PVC",
   selectedConduitSize,
-  showComparison = true
+  showComparison = true,
 }) => {
-  const [chartType, setChartType] = React.useState<'bar' | 'pie'>('bar');
+  const [chartType, setChartType] = React.useState<"bar" | "pie">("bar");
 
   // Generate comparison data for all conduit sizes
   const comparisonData = useMemo(() => {
@@ -59,7 +58,7 @@ const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
       // This is a simplified calculation - in real implementation,
       // you'd need to get actual wire specifications
       const baseArea = parseFloat(wire.gauge) || 1;
-      return sum + (baseArea * wire.count);
+      return sum + baseArea * wire.count;
     }, 0);
 
     return wires.map((wire) => {
@@ -71,21 +70,37 @@ const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
         percentage: (wireArea / totalArea) * 100,
         count: wire.count,
         gauge: wire.gauge,
-        insulationType: wire.insulationType
+        insulationType: wire.insulationType,
       };
     });
   }, [wires]);
 
   // Colors for different elements
   const barColors = {
-    compliant: '#2ca02c',
-    nonCompliant: '#d62728',
-    selected: '#1f77b4'
+    compliant: "#2ca02c",
+    nonCompliant: "#d62728",
+    selected: "#1f77b4",
   };
 
-  const pieColors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f'];
+  const pieColors = [
+    "#1f77b4",
+    "#ff7f0e",
+    "#2ca02c",
+    "#d62728",
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+  ];
 
-  const getBarColor = (data: any) => {
+  const getBarColor = (data: {
+    conduitSize: string;
+    fillPercent: number;
+    maxFillPercent: number;
+    isCompliant: boolean;
+    availableArea: number;
+    usedArea: number;
+  }) => {
     if (selectedConduitSize && data.conduitSize === selectedConduitSize) {
       return barColors.selected;
     }
@@ -95,7 +110,12 @@ const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
   return (
     <Card>
       <CardContent>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
           <Typography variant="h6" component="h3">
             Conduit Fill Analysis
           </Typography>
@@ -103,7 +123,7 @@ const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
             <InputLabel>Chart Type</InputLabel>
             <Select
               value={chartType}
-              onChange={(e) => setChartType(e.target.value as 'bar' | 'pie')}
+              onChange={(e) => setChartType(e.target.value as "bar" | "pie")}
               label="Chart Type"
             >
               <MenuItem value="bar">Fill Comparison</MenuItem>
@@ -115,34 +135,45 @@ const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
         <Grid container spacing={3}>
           {/* Main Chart */}
           <Grid item xs={12} md={8}>
-            {chartType === 'bar' && showComparison ? (
+            {chartType === "bar" && showComparison ? (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={comparisonData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis 
-                    dataKey="conduitSize" 
-                    label={{ value: 'Conduit Size (mm)', position: 'insideBottom', offset: -5 }}
+                  <XAxis
+                    dataKey="conduitSize"
+                    label={{
+                      value: "Conduit Size (mm)",
+                      position: "insideBottom",
+                      offset: -5,
+                    }}
                   />
-                  <YAxis 
-                    label={{ value: 'Fill Percentage (%)', angle: -90, position: 'insideLeft' }}
+                  <YAxis
+                    label={{
+                      value: "Fill Percentage (%)",
+                      angle: -90,
+                      position: "insideLeft",
+                    }}
                     domain={[0, 100]}
                   />
-                  <Tooltip 
-                    formatter={(value: number, name: string) => [`${value.toFixed(1)}%`, name]}
+                  <Tooltip
+                    formatter={(value: number, name: string) => [
+                      `${value.toFixed(1)}%`,
+                      name,
+                    ]}
                     labelFormatter={(value) => `Conduit: ${value}mm`}
                   />
                   <Legend />
-                  
+
                   {/* Reference line for maximum fill */}
-                  <ReferenceLine 
-                    y={40} 
-                    stroke="#d62728" 
+                  <ReferenceLine
+                    y={40}
+                    stroke="#d62728"
                     strokeDasharray="5 5"
                     label="Max Fill (40%)"
                   />
 
-                  <Bar 
-                    dataKey="fillPercent" 
+                  <Bar
+                    dataKey="fillPercent"
                     name="Fill Percentage"
                     fill="#2ca02c"
                   >
@@ -160,17 +191,25 @@ const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage }) => `${name}: ${percentage.toFixed(1)}%`}
+                    label={({ name, percentage }) =>
+                      `${name}: ${percentage.toFixed(1)}%`
+                    }
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
                   >
                     {wireBreakdownData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={pieColors[index % pieColors.length]}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip 
-                    formatter={(value: number, name: string) => [`${value.toFixed(2)} mm²`, name]}
+                  <Tooltip
+                    formatter={(value: number, name: string) => [
+                      `${value.toFixed(2)} mm²`,
+                      name,
+                    ]}
                   />
                   <Legend />
                 </PieChart>
@@ -186,13 +225,14 @@ const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
               </Typography>
               {wires.map((wire, index) => (
                 <Box key={index} mb={1}>
-                  <Chip 
+                  <Chip
                     label={`${wire.gauge}mm² × ${wire.count} (${wire.insulationType})`}
                     variant="outlined"
                     size="small"
-                    style={{ 
-                      backgroundColor: pieColors[index % pieColors.length] + '20',
-                      borderColor: pieColors[index % pieColors.length]
+                    style={{
+                      backgroundColor:
+                        pieColors[index % pieColors.length] + "20",
+                      borderColor: pieColors[index % pieColors.length],
                     }}
                   />
                 </Box>
@@ -207,16 +247,22 @@ const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
                     Size: {selectedConduitSize}mm ({conduitType})
                   </Typography>
                   {(() => {
-                    const selected = comparisonData.find(d => d.conduitSize === selectedConduitSize);
+                    const selected = comparisonData.find(
+                      (d) => d.conduitSize === selectedConduitSize,
+                    );
                     if (selected) {
                       return (
                         <>
                           <Typography variant="body2">
                             Fill: {selected.fillPercent.toFixed(1)}%
                           </Typography>
-                          <Chip 
-                            label={selected.isCompliant ? 'Compliant' : 'Non-Compliant'}
-                            color={selected.isCompliant ? 'success' : 'error'}
+                          <Chip
+                            label={
+                              selected.isCompliant
+                                ? "Compliant"
+                                : "Non-Compliant"
+                            }
+                            color={selected.isCompliant ? "success" : "error"}
                             size="small"
                             sx={{ mt: 1 }}
                           />
@@ -253,18 +299,23 @@ const ConduitFillChart: React.FC<ConduitFillChartProps> = ({
               Recommendations:
             </Typography>
             {(() => {
-              const compliantSizes = comparisonData.filter(d => d.isCompliant);
+              const compliantSizes = comparisonData.filter(
+                (d) => d.isCompliant,
+              );
               if (compliantSizes.length > 0) {
                 const smallest = compliantSizes[0];
                 return (
                   <Typography variant="body2" color="text.secondary">
-                    Minimum conduit size: {smallest.conduitSize}mm ({conduitType}) with {smallest.fillPercent.toFixed(1)}% fill
+                    Minimum conduit size: {smallest.conduitSize}mm (
+                    {conduitType}) with {smallest.fillPercent.toFixed(1)}% fill
                   </Typography>
                 );
               } else {
                 return (
                   <Typography variant="body2" color="error">
-                    No compliant conduit sizes found for this wire configuration. Consider reducing wire count or using larger conduits.
+                    No compliant conduit sizes found for this wire
+                    configuration. Consider reducing wire count or using larger
+                    conduits.
                   </Typography>
                 );
               }
