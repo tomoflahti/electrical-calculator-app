@@ -14,15 +14,16 @@ import {
   Alert,
   Divider,
   Chip,
-  LinearProgress
+  LinearProgress,
+  GridLegacy as Grid
 } from '@mui/material';
-import { GridLegacy as Grid } from '@mui/material';
 import { Calculate, CheckCircle, Error as ErrorIcon, Battery4Bar, Speed, TrendingUp } from '@mui/icons-material';
 import type { 
   DCApplicationType, 
   ElectricalStandardId, 
   DCCalculationInput, 
-  DCCalculationResult 
+  DCCalculationResult,
+  DCVoltageSystem
 } from '../types/standards';
 import { calculateDCWireSize, validateDCInput } from '../utils/calculations/dc';
 import { getDCVoltages } from '../standards';
@@ -57,7 +58,7 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
     current: 20,
     length: 10,
     voltage: initialVoltage,
-    voltageSystem: `${initialVoltage}V` as any,
+    voltageSystem: `${initialVoltage}V` as DCVoltageSystem,
     applicationType: 'automotive',
     conductorMaterial: 'copper',
     ambientTemperature: 25,
@@ -76,7 +77,7 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
   const [error, setError] = useState<string>('');
   const [isCalculating, setIsCalculating] = useState(false);
 
-  const handleInputChange = (field: keyof DCCalculationInput, value: any) => {
+  const handleInputChange = (field: keyof DCCalculationInput, value: string | number) => {
     setInput(prev => ({
       ...prev,
       [field]: value
@@ -123,7 +124,7 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
       setInput(prev => ({
         ...prev,
         voltage: newVoltage,
-        voltageSystem: `${newVoltage}V` as any
+        voltageSystem: `${newVoltage}V` as DCVoltageSystem
       }));
       // Update form state as well
       setFormInputs(prev => ({

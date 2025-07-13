@@ -190,7 +190,7 @@ test.describe('Electrical Calculator End-to-End Tests', () => {
       await page.goBack();
       
       // Check if values are preserved (if the app supports this)
-      const currentValue = await currentInput.inputValue();
+      const _currentValue = await currentInput.inputValue();
       // This might not be preserved depending on implementation
     }
 

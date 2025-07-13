@@ -18,9 +18,9 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TableRow
+  TableRow,
+  GridLegacy as Grid
 } from '@mui/material';
-import { GridLegacy as Grid } from '@mui/material';
 import { Calculate, CheckCircle, Error, Add, Delete } from '@mui/icons-material';
 import { calculateConduitFill } from '../utils/calculations/conduitFillRouter';
 import type { 
@@ -169,7 +169,7 @@ export default function ConduitFillCalculator({ selectedStandard = 'NEC' }: Cond
     setWires(wires.filter(w => w.id !== id));
   };
 
-  const updateWire = (id: string, field: keyof Omit<WireEntry, 'id'>, value: any) => {
+  const updateWire = (id: string, field: keyof Omit<WireEntry, 'id'>, value: string | number) => {
     setWires(wires.map(w => 
       w.id === id ? { ...w, [field]: value } : w
     ));

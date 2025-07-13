@@ -16,9 +16,9 @@ import {
   Chip,
   LinearProgress,
   FormControlLabel,
-  Switch
+  Switch,
+  GridLegacy as Grid
 } from '@mui/material';
-import { GridLegacy as Grid } from '@mui/material';
 import { 
   Calculate, 
   CheckCircle, 
@@ -52,7 +52,7 @@ interface DCBreakerFormInputState {
   wireGauge: string;
 }
 
-export default function DCBreakerCalculator({ }: DCBreakerCalculatorProps) {
+export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
   const [selectedApplication, setSelectedApplication] = useState<DCApplicationType>('automotive');
   const [dutyCycle, setDutyCycle] = useState<DCDutyCycle>('continuous');
   const [continuousOperation, setContinuousOperation] = useState(true);
@@ -361,7 +361,7 @@ export default function DCBreakerCalculator({ }: DCBreakerCalculatorProps) {
                       value={environment}
                       label="Environment"
                       data-testid="environment-selector"
-                      onChange={(e) => setEnvironment(e.target.value as any)}
+                      onChange={(e) => setEnvironment(e.target.value as 'indoor' | 'outdoor' | 'marine' | 'automotive')}
                     >
                       <MenuItem value="indoor">Indoor</MenuItem>
                       <MenuItem value="outdoor">Outdoor</MenuItem>

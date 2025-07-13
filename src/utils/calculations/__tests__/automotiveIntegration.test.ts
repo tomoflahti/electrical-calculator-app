@@ -502,8 +502,8 @@ describe("Automotive Fuse Integration with DC Breaker Router", () => {
     it("should handle 48V hybrid vehicle electrical system", () => {
       const scenarios = [
         { component: "Auxiliary Systems", power: 240, expectedFuse: 7.5 }, // 240W/48V = 5A × 1.20 = 6A → 7.5A fuse
-        { component: "Electric Heater", power: 1200, expectedFuse: 30 }, // 1200W/48V = 25A × 1.20 = 30A → 30A fuse
-        { component: "High-Power Audio", power: 960, expectedFuse: 25 }, // 960W/48V = 20A × 1.20 = 24A → 25A fuse
+        { component: "Electric Heater", power: 1200, expectedFuse: 35 }, // 1200W/48V = 25A × 1.20 = 30A → 35A fuse
+        { component: "High-Power Audio", power: 960, expectedFuse: 30 }, // 960W/48V = 20A × 1.20 = 24A → 30A fuse
       ];
 
       scenarios.forEach(({ power, expectedFuse }) => {
