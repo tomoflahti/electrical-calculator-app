@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.46% </span>
+                <span class="strong">37.03% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/26</span>
+                <span class='fraction'>10/27</span>
             </div>
         
             
@@ -161,7 +161,25 @@
 <a name='L96'></a><a href='#L96'>96</a>
 <a name='L97'></a><a href='#L97'>97</a>
 <a name='L98'></a><a href='#L98'>98</a>
-<a name='L99'></a><a href='#L99'>99</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -234,22 +252,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -258,36 +267,63 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Wire gauge conversion utilities between AWG and metric (mm²) systems
  */
 &nbsp;
 // AWG to mm² conversion table (approximate values for common sizes)
 const AWG_TO_MM2: Record&lt;string, number&gt; = {
-  '14': 2.08,
-  '12': 3.31,
-  '10': 5.26,
-  '8': 8.37,
-  '6': 13.3,
-  '4': 21.2,
-  '2': 33.6,
-  '1': 42.4,
-  '1/0': 53.5,
-  '2/0': 67.4,
-  '3/0': 85.0,
-  '4/0': 107.2,
-  '250': 127,
-  '300': 152,
-  '350': 177,
-  '400': 203,
-  '500': 253,
-  '600': 304,
-  '700': 355,
-  '750': 380,
-  '800': 405,
-  '900': 456,
-  '1000': 507
+  "14": 2.08,
+  "12": 3.31,
+  "10": 5.26,
+  "8": 8.37,
+  "6": 13.3,
+  "4": 21.2,
+  "2": 33.6,
+  "1": 42.4,
+  "1/0": 53.5,
+  "2/0": 67.4,
+  "3/0": 85.0,
+  "4/0": 107.2,
+  "250": 127,
+  "300": 152,
+  "350": 177,
+  "400": 203,
+  "500": 253,
+  "600": 304,
+  "700": 355,
+  "750": 380,
+  "800": 405,
+  "900": 456,
+  "1000": 507,
 };
 &nbsp;
 // Reverse mapping for mm² to closest AWG
@@ -308,9 +344,9 @@ export function <span class="fstat-no" title="function not covered" >awgToMm2(</
  */
 export function <span class="fstat-no" title="function not covered" >mm2ToAwg(</span>mm2: number): string {
   // Find the closest AWG size
-  let closestAwg = <span class="cstat-no" title="statement not covered" >'14';</span>
-  let minDifference = <span class="cstat-no" title="statement not covered" >Math.abs(AWG_TO_MM2['14'] - mm2);</span>
-  
+  let closestAwg = <span class="cstat-no" title="statement not covered" >"14";</span>
+  let minDifference = <span class="cstat-no" title="statement not covered" >Math.abs(AWG_TO_MM2["14"] - mm2);</span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  Object.entries(AWG_TO_MM2).forEach(<span class="fstat-no" title="function not covered" >([</span>awg, awgMm2]) =&gt; {</span>
     const difference = <span class="cstat-no" title="statement not covered" >Math.abs(awgMm2 - mm2);</span>
 <span class="cstat-no" title="statement not covered" >    if (difference &lt; minDifference) {</span>
@@ -318,7 +354,7 @@ export function <span class="fstat-no" title="function not covered" >mm2ToAwg(</
 <span class="cstat-no" title="statement not covered" >      closestAwg = awg;</span>
     }
   });
-  
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  return closestAwg;</span>
 }
 &nbsp;
@@ -326,7 +362,10 @@ export function <span class="fstat-no" title="function not covered" >mm2ToAwg(</
  * Get metric wire sizes for common DC applications
  */
 export function <span class="fstat-no" title="function not covered" >getMetricWireSizes(</span>): number[] {
-<span class="cstat-no" title="statement not covered" >  return [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300, 400, 500];</span>
+<span class="cstat-no" title="statement not covered" >  return [</span>
+    1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300, 400,
+    500,
+  ];
 }
 &nbsp;
 /**
@@ -334,37 +373,52 @@ export function <span class="fstat-no" title="function not covered" >getMetricWi
  */
 export function <span class="fstat-no" title="function not covered" >findMinimumMetricWireSize(</span>requiredMm2: number): number {
   const metricSizes = <span class="cstat-no" title="statement not covered" >getMetricWireSizes();</span>
-<span class="cstat-no" title="statement not covered" >  return metricSizes.find(<span class="fstat-no" title="function not covered" >size </span>=&gt; <span class="cstat-no" title="statement not covered" >size &gt;= requiredMm2)</span> || metricSizes[metricSizes.length - 1];</span>
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    metricSizes.find(<span class="fstat-no" title="function not covered" >(s</span>ize) =&gt; <span class="cstat-no" title="statement not covered" >size &gt;= requiredMm2)</span> ||
+    metricSizes[metricSizes.length - 1]
+  );
 }
 &nbsp;
 /**
  * Convert AWG wire specification to metric equivalent
  */
-export function <span class="fstat-no" title="function not covered" >convertAwgWireToMetric(</span>awgWire: any): any {
+export function <span class="fstat-no" title="function not covered" >convertAwgWireToMetric(</span>awgWire: {
+  gauge: string;
+  [key: string]: unknown;
+}): {
+  gauge: string;
+  crossSectionMm2: number;
+  awgEquivalent: string;
+  [key: string]: unknown;
+} {
   const mm2 = <span class="cstat-no" title="statement not covered" >awgToMm2(awgWire.gauge);</span>
   const metricSize = <span class="cstat-no" title="statement not covered" >findMinimumMetricWireSize(mm2);</span>
-  
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
     ...awgWire,
     gauge: metricSize.toString(),
     crossSectionMm2: metricSize,
-    awgEquivalent: awgWire.gauge
+    awgEquivalent: awgWire.gauge,
   };
 }
 &nbsp;
 /**
  * Format wire size for display based on standard
  */
-export function <span class="fstat-no" title="function not covered" >formatWireSize(</span>wireSize: string, standard: 'NEC' | 'IEC'): string {
-<span class="cstat-no" title="statement not covered" >  return standard === 'NEC' ? `${wireSize} AWG` : `${wireSize} mm²`;</span>
-}</pre></td></tr></table></pre>
+export function <span class="fstat-no" title="function not covered" >formatWireSize(</span>
+  wireSize: string,
+  standard: "NEC" | "IEC",
+): string {
+<span class="cstat-no" title="statement not covered" >  return standard === "NEC" ? `${wireSize} AWG` : `${wireSize} mm²`;</span>
+}
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-13T00:28:33.682Z
+                at 2025-07-13T05:28:16.873Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

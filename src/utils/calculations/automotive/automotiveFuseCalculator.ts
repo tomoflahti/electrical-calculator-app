@@ -62,6 +62,7 @@ export function calculateAutomotiveFuseSize(
         calculatedCurrent: number;
         effectivePower: number;
         powerLossWatts: number;
+        powerFactor: number;
       }
     | undefined = undefined;
 
@@ -92,6 +93,7 @@ export function calculateAutomotiveFuseSize(
       calculatedCurrent: baseCurrent,
       effectivePower: loadPower * efficiency,
       powerLossWatts: loadPower * (1 - efficiency),
+      powerFactor: 1.0, // DC systems have unity power factor
     };
   } else {
     throw new Error("Invalid input method or missing required parameters");
