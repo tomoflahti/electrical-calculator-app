@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { handleNumberInput, getNumericValue } from '../utils/inputHelpers';
+import { useState } from "react";
+import { handleNumberInput, getNumericValue } from "../utils/inputHelpers";
 import {
   Card,
   CardContent,
@@ -17,24 +17,27 @@ import {
   LinearProgress,
   FormControlLabel,
   Switch,
-  GridLegacy as Grid
-} from '@mui/material';
-import { 
-  Calculate, 
-  CheckCircle, 
-  Error as ErrorIcon, 
+  GridLegacy as Grid,
+} from "@mui/material";
+import {
+  Calculate,
+  CheckCircle,
+  Error as ErrorIcon,
   ElectricalServices,
   Security,
-  Thermostat
-} from '@mui/icons-material';
-import type { 
-  DCApplicationType, 
-  DCBreakerCalculationInput, 
+  Thermostat,
+} from "@mui/icons-material";
+import type {
+  DCApplicationType,
+  DCBreakerCalculationInput,
   DCBreakerCalculationResult,
-  DCDutyCycle 
-} from '../types/standards';
-import { calculateDCBreakerSize, validateDCBreakerInput } from '../utils/calculations/dcBreakerRouter';
-import DCApplicationSelector from './DCApplicationSelector';
+  DCDutyCycle,
+} from "../types/standards";
+import {
+  calculateDCBreakerSize,
+  validateDCBreakerInput,
+} from "../utils/calculations/dcBreakerRouter";
+import DCApplicationSelector from "./DCApplicationSelector";
 
 interface DCBreakerCalculatorProps {
   selectedStandard?: string;
@@ -53,68 +56,76 @@ interface DCBreakerFormInputState {
 }
 
 export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
-  const [selectedApplication, setSelectedApplication] = useState<DCApplicationType>('automotive');
-  const [dutyCycle, setDutyCycle] = useState<DCDutyCycle>('continuous');
+  const [selectedApplication, setSelectedApplication] =
+    useState<DCApplicationType>("automotive");
+  const [dutyCycle, setDutyCycle] = useState<DCDutyCycle>("continuous");
   const [continuousOperation, setContinuousOperation] = useState(true);
-  const [environment, setEnvironment] = useState<'indoor' | 'outdoor' | 'marine' | 'automotive'>('indoor');
-  const [wireStandard, setWireStandard] = useState<'NEC' | 'IEC'>('NEC');
-  const [inputMethod, setInputMethod] = useState<'current' | 'power'>('current');
-  
+  const [environment, setEnvironment] = useState<
+    "indoor" | "outdoor" | "marine" | "automotive"
+  >("indoor");
+  const [wireStandard, setWireStandard] = useState<"NEC" | "IEC">("NEC");
+  const [inputMethod, setInputMethod] = useState<"current" | "power">(
+    "current",
+  );
+
   const [input, setInput] = useState<DCBreakerCalculationInput>({
-    inputMethod: 'current',
+    inputMethod: "current",
     loadCurrent: 20,
-    applicationType: 'automotive',
-    dutyCycle: 'continuous',
+    applicationType: "automotive",
+    dutyCycle: "continuous",
     ambientTemperature: 25,
     continuousOperation: true,
-    environment: 'indoor',
-    wireStandard: 'NEC'
+    environment: "indoor",
+    wireStandard: "NEC",
   });
 
   // Form input state for better UX
   const [formInputs, setFormInputs] = useState<DCBreakerFormInputState>({
-    loadCurrent: '20',
-    loadPower: '240',
-    systemVoltage: '12',
-    shortCircuitCurrent: '',
-    numberOfPanels: '',
-    panelIsc: '',
-    ambientTemperature: '25',
-    wireGauge: ''
+    loadCurrent: "20",
+    loadPower: "240",
+    systemVoltage: "12",
+    shortCircuitCurrent: "",
+    numberOfPanels: "",
+    panelIsc: "",
+    ambientTemperature: "25",
+    wireGauge: "",
   });
 
   const [result, setResult] = useState<DCBreakerCalculationResult | null>(null);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [isCalculating, setIsCalculating] = useState(false);
 
   // Clear results when input changes
   const clearResults = () => {
     setResult(null);
-    setError('');
+    setError("");
   };
 
   // Handler for form inputs (prevents leading zeros and handles empty values)
-  const handleFormInputChange = (field: keyof DCBreakerFormInputState, value: string) => {
+  const handleFormInputChange = (
+    field: keyof DCBreakerFormInputState,
+    value: string,
+  ) => {
     const processedValue = handleNumberInput(value, {
       min: 0.1,
       allowDecimals: true,
       allowEmpty: true,
-      emptyValue: ''
+      emptyValue: "",
     });
-    
+
     if (processedValue !== null) {
-      setFormInputs(prev => ({
+      setFormInputs((prev) => ({
         ...prev,
-        [field]: String(processedValue)
+        [field]: String(processedValue),
       }));
     }
   };
 
   const handleApplicationChange = (application: DCApplicationType) => {
     setSelectedApplication(application);
-    setInput(prev => ({
+    setInput((prev) => ({
       ...prev,
-      applicationType: application
+      applicationType: application,
     }));
     clearResults();
   };
@@ -122,44 +133,57 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
   const handleCalculate = async () => {
     try {
       setIsCalculating(true);
-      setError('');
-      
+      setError("");
+
       // Convert form inputs to numbers for calculation
       const calculationInput: DCBreakerCalculationInput = {
         ...input,
         inputMethod,
-        loadCurrent: inputMethod === 'current' ? getNumericValue(formInputs.loadCurrent, 20) : undefined,
-        loadPower: inputMethod === 'power' ? getNumericValue(formInputs.loadPower, 240) : undefined,
-        systemVoltage: inputMethod === 'power' ? getNumericValue(formInputs.systemVoltage, 12) : undefined,
-        shortCircuitCurrent: formInputs.shortCircuitCurrent ? 
-          getNumericValue(formInputs.shortCircuitCurrent, 0) : undefined,
-        numberOfPanels: formInputs.numberOfPanels ? 
-          getNumericValue(formInputs.numberOfPanels, 0) : undefined,
-        panelIsc: formInputs.panelIsc ? 
-          getNumericValue(formInputs.panelIsc, 0) : undefined,
+        loadCurrent:
+          inputMethod === "current"
+            ? getNumericValue(formInputs.loadCurrent, 20)
+            : undefined,
+        loadPower:
+          inputMethod === "power"
+            ? getNumericValue(formInputs.loadPower, 240)
+            : undefined,
+        systemVoltage:
+          inputMethod === "power"
+            ? getNumericValue(formInputs.systemVoltage, 12)
+            : undefined,
+        shortCircuitCurrent: formInputs.shortCircuitCurrent
+          ? getNumericValue(formInputs.shortCircuitCurrent, 0)
+          : undefined,
+        numberOfPanels: formInputs.numberOfPanels
+          ? getNumericValue(formInputs.numberOfPanels, 0)
+          : undefined,
+        panelIsc: formInputs.panelIsc
+          ? getNumericValue(formInputs.panelIsc, 0)
+          : undefined,
         ambientTemperature: getNumericValue(formInputs.ambientTemperature, 25),
         wireGauge: formInputs.wireGauge || undefined,
         dutyCycle,
         continuousOperation,
         environment,
-        wireStandard
+        wireStandard,
       };
-      
+
       // Validate input
       const validationErrors = validateDCBreakerInput(calculationInput);
       if (validationErrors.length > 0) {
-        setError(validationErrors.join(', '));
+        setError(validationErrors.join(", "));
         setIsCalculating(false);
         return;
       }
-      
+
       // Simulate calculation delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       const calculationResult = calculateDCBreakerSize(calculationInput);
       setResult(calculationResult);
     } catch (err) {
-      const errorMessage = (err as Error)?.message || 'DC breaker calculation failed';
+      const errorMessage =
+        (err as Error)?.message || "DC breaker calculation failed";
       setError(errorMessage);
       setResult(null);
     } finally {
@@ -168,8 +192,8 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
   };
 
   // Get compliance color
-  const getComplianceColor = (compliant: boolean): 'success' | 'error' => {
-    return compliant ? 'success' : 'error';
+  const getComplianceColor = (compliant: boolean): "success" | "error" => {
+    return compliant ? "success" : "error";
   };
 
   return (
@@ -178,7 +202,9 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
         DC Circuit Breaker Calculator
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Calculate circuit breaker sizing for DC electrical systems including automotive, marine, solar, and telecommunications applications with proper standards compliance.
+        Calculate circuit breaker sizing for DC electrical systems including
+        automotive, marine, solar, and telecommunications applications with
+        proper standards compliance.
       </Typography>
 
       {/* Application Selector */}
@@ -196,7 +222,7 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
               <Typography variant="h6" gutterBottom>
                 Circuit Parameters
               </Typography>
-              
+
               <Grid container spacing={2}>
                 {/* Input Method Selection */}
                 <Grid item xs={12}>
@@ -207,7 +233,7 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                       label="Input Method"
                       data-testid="input-method-selector"
                       onChange={(e) => {
-                        setInputMethod(e.target.value as 'current' | 'power');
+                        setInputMethod(e.target.value as "current" | "power");
                         clearResults();
                       }}
                     >
@@ -216,40 +242,44 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                     </Select>
                   </FormControl>
                 </Grid>
-                
+
                 {/* Current-based inputs */}
-                {inputMethod === 'current' && (
+                {inputMethod === "current" && (
                   <Grid item xs={12} sm={6}>
                     <TextField
                       label="Load Current (A)"
                       type="text"
                       value={formInputs.loadCurrent}
-                      onChange={(e) => handleFormInputChange('loadCurrent', e.target.value)}
+                      onChange={(e) =>
+                        handleFormInputChange("loadCurrent", e.target.value)
+                      }
                       fullWidth
                       required
-                      inputProps={{ 
-                        inputMode: 'decimal',
-                        pattern: '[0-9]*\\.?[0-9]*'
+                      inputProps={{
+                        inputMode: "decimal",
+                        pattern: "[0-9]*\\.?[0-9]*",
                       }}
                       helperText="Continuous operating current"
                     />
                   </Grid>
                 )}
-                
+
                 {/* Power-based inputs */}
-                {inputMethod === 'power' && (
+                {inputMethod === "power" && (
                   <>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         label="Load Power (W)"
                         type="text"
                         value={formInputs.loadPower}
-                        onChange={(e) => handleFormInputChange('loadPower', e.target.value)}
+                        onChange={(e) =>
+                          handleFormInputChange("loadPower", e.target.value)
+                        }
                         fullWidth
                         required
-                        inputProps={{ 
-                          inputMode: 'decimal',
-                          pattern: '[0-9]*\\.?[0-9]*'
+                        inputProps={{
+                          inputMode: "decimal",
+                          pattern: "[0-9]*\\.?[0-9]*",
                         }}
                         helperText="Total power consumption"
                       />
@@ -259,20 +289,21 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                         label="System Voltage (V)"
                         type="text"
                         value={formInputs.systemVoltage}
-                        onChange={(e) => handleFormInputChange('systemVoltage', e.target.value)}
+                        onChange={(e) =>
+                          handleFormInputChange("systemVoltage", e.target.value)
+                        }
                         fullWidth
                         required
-                        inputProps={{ 
-                          inputMode: 'decimal',
-                          pattern: '[0-9]*\\.?[0-9]*'
+                        inputProps={{
+                          inputMode: "decimal",
+                          pattern: "[0-9]*\\.?[0-9]*",
                         }}
                         helperText="DC system voltage"
                       />
                     </Grid>
                   </>
                 )}
-                
-                
+
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel>Duty Cycle</InputLabel>
@@ -280,80 +311,103 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                       value={dutyCycle}
                       label="Duty Cycle"
                       data-testid="duty-cycle-selector"
-                      onChange={(e) => setDutyCycle(e.target.value as DCDutyCycle)}
+                      onChange={(e) =>
+                        setDutyCycle(e.target.value as DCDutyCycle)
+                      }
                     >
-                      <MenuItem value="continuous">Continuous (&gt;3 hours)</MenuItem>
-                      <MenuItem value="intermittent">Intermittent (&lt;3 hours)</MenuItem>
+                      <MenuItem value="continuous">
+                        Continuous (&gt;3 hours)
+                      </MenuItem>
+                      <MenuItem value="intermittent">
+                        Intermittent (&lt;3 hours)
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
 
                 {/* Solar-specific inputs */}
-                {selectedApplication === 'solar' && (
+                {selectedApplication === "solar" && (
                   <>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         label="Short Circuit Current (A)"
                         type="text"
                         value={formInputs.shortCircuitCurrent}
-                        onChange={(e) => handleFormInputChange('shortCircuitCurrent', e.target.value)}
+                        onChange={(e) =>
+                          handleFormInputChange(
+                            "shortCircuitCurrent",
+                            e.target.value,
+                          )
+                        }
                         fullWidth
-                        inputProps={{ 
-                          inputMode: 'decimal',
-                          pattern: '[0-9]*\\.?[0-9]*'
+                        inputProps={{
+                          inputMode: "decimal",
+                          pattern: "[0-9]*\\.?[0-9]*",
                         }}
                         helperText="Panel or string ISC"
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12} sm={6}>
                       <TextField
                         label="Number of Panels"
                         type="text"
                         value={formInputs.numberOfPanels}
-                        onChange={(e) => handleFormInputChange('numberOfPanels', e.target.value)}
+                        onChange={(e) =>
+                          handleFormInputChange(
+                            "numberOfPanels",
+                            e.target.value,
+                          )
+                        }
                         fullWidth
-                        inputProps={{ 
-                          inputMode: 'numeric',
-                          pattern: '[0-9]*'
+                        inputProps={{
+                          inputMode: "numeric",
+                          pattern: "[0-9]*",
                         }}
                         helperText="Parallel panels"
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12} sm={6}>
                       <TextField
                         label="Panel ISC (A)"
                         type="text"
                         value={formInputs.panelIsc}
-                        onChange={(e) => handleFormInputChange('panelIsc', e.target.value)}
+                        onChange={(e) =>
+                          handleFormInputChange("panelIsc", e.target.value)
+                        }
                         fullWidth
-                        inputProps={{ 
-                          inputMode: 'decimal',
-                          pattern: '[0-9]*\\.?[0-9]*'
+                        inputProps={{
+                          inputMode: "decimal",
+                          pattern: "[0-9]*\\.?[0-9]*",
                         }}
                         helperText="Individual panel ISC"
                       />
                     </Grid>
                   </>
                 )}
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Ambient Temperature (°C)"
                     type="text"
                     value={formInputs.ambientTemperature}
-                    onChange={(e) => handleFormInputChange('ambientTemperature', e.target.value)}
+                    onChange={(e) =>
+                      handleFormInputChange(
+                        "ambientTemperature",
+                        e.target.value,
+                      )
+                    }
                     fullWidth
                     data-testid="ambient-temperature-input"
-                    inputProps={{ 
-                      inputMode: 'decimal',
-                      pattern: '[0-9-]*\\.?[0-9]*'
+                    inputProps={{
+                      inputMode: "decimal",
+                      pattern: "[0-9-]*\\.?[0-9]*",
                     }}
                     helperText="Operating environment temperature"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel>Environment</InputLabel>
@@ -361,7 +415,15 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                       value={environment}
                       label="Environment"
                       data-testid="environment-selector"
-                      onChange={(e) => setEnvironment(e.target.value as 'indoor' | 'outdoor' | 'marine' | 'automotive')}
+                      onChange={(e) =>
+                        setEnvironment(
+                          e.target.value as
+                            | "indoor"
+                            | "outdoor"
+                            | "marine"
+                            | "automotive",
+                        )
+                      }
                     >
                       <MenuItem value="indoor">Indoor</MenuItem>
                       <MenuItem value="outdoor">Outdoor</MenuItem>
@@ -376,7 +438,12 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                     label="Wire Gauge (optional)"
                     type="text"
                     value={formInputs.wireGauge}
-                    onChange={(e) => setFormInputs(prev => ({ ...prev, wireGauge: e.target.value }))}
+                    onChange={(e) =>
+                      setFormInputs((prev) => ({
+                        ...prev,
+                        wireGauge: e.target.value,
+                      }))
+                    }
                     fullWidth
                     helperText="For compatibility check"
                   />
@@ -389,7 +456,9 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                       value={wireStandard}
                       label="Wire Standard"
                       data-testid="wire-standard-selector"
-                      onChange={(e) => setWireStandard(e.target.value as 'NEC' | 'IEC')}
+                      onChange={(e) =>
+                        setWireStandard(e.target.value as "NEC" | "IEC")
+                      }
                     >
                       <MenuItem value="NEC">NEC (AWG)</MenuItem>
                       <MenuItem value="IEC">IEC (mm²)</MenuItem>
@@ -402,14 +471,16 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                     control={
                       <Switch
                         checked={continuousOperation}
-                        onChange={(e) => setContinuousOperation(e.target.checked)}
+                        onChange={(e) =>
+                          setContinuousOperation(e.target.checked)
+                        }
                       />
                     }
                     label="Continuous Operation"
                   />
                 </Grid>
               </Grid>
-              
+
               <Box mt={3}>
                 <Button
                   variant="contained"
@@ -425,7 +496,7 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                       Calculating...
                     </Box>
                   ) : (
-                    'Calculate Breaker Size'
+                    "Calculate Breaker Size"
                   )}
                 </Button>
               </Box>
@@ -439,13 +510,17 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
               <Typography variant="h6" gutterBottom>
                 Breaker Recommendations
               </Typography>
-              
+
               {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
+                <Alert
+                  severity="error"
+                  sx={{ mb: 2 }}
+                  data-testid="error-alert"
+                >
                   {error}
                 </Alert>
               )}
-              
+
               {result && (
                 <Box>
                   <Grid container spacing={2}>
@@ -455,23 +530,38 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                           {result.recommendedBreakerRating}A
                         </Typography>
                         <Chip
-                          icon={result.compliance.standardCompliant && result.compliance.wireCompatible ? 
-                            <CheckCircle /> : <ErrorIcon />}
-                          label={result.compliance.standardCompliant && result.compliance.wireCompatible ? 
-                            "Compliant" : "Check Required"}
-                          color={result.compliance.standardCompliant && result.compliance.wireCompatible ? 
-                            "success" : "warning"}
+                          icon={
+                            result.compliance.standardCompliant &&
+                            result.compliance.wireCompatible ? (
+                              <CheckCircle />
+                            ) : (
+                              <ErrorIcon />
+                            )
+                          }
+                          label={
+                            result.compliance.standardCompliant &&
+                            result.compliance.wireCompatible
+                              ? "Compliant"
+                              : "Check Required"
+                          }
+                          color={
+                            result.compliance.standardCompliant &&
+                            result.compliance.wireCompatible
+                              ? "success"
+                              : "warning"
+                          }
                         />
                       </Box>
                       <Typography variant="body2" color="text.secondary">
-                        {result.breakerType.replace('-', ' ').toUpperCase()} • {result.standard}
+                        {result.breakerType.replace("-", " ").toUpperCase()} •{" "}
+                        {result.standard}
                       </Typography>
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <Divider sx={{ my: 2 }} />
                     </Grid>
-                    
+
                     {/* Calculation Details */}
                     <Grid item xs={12} sm={6}>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
@@ -487,7 +577,7 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                         Safety factor: {result.safetyFactor}×
                       </Typography>
                     </Grid>
-                    
+
                     {/* Minimum Size */}
                     <Grid item xs={12} sm={6}>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
@@ -503,7 +593,7 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                         Next standard: {result.nextStandardSize}A
                       </Typography>
                     </Grid>
-                    
+
                     {/* Temperature Derating */}
                     {result.temperatureDerating && (
                       <Grid item xs={12} sm={6}>
@@ -519,7 +609,7 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                       </Grid>
                     )}
                   </Grid>
-                  
+
                   {/* Power Analysis (for power-based calculations) */}
                   {result.powerAnalysis && (
                     <Box mt={3}>
@@ -556,7 +646,10 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                             Efficiency Factor
                           </Typography>
                           <Typography variant="h6">
-                            {(result.powerAnalysis.efficiencyFactor * 100).toFixed(0)}%
+                            {(
+                              result.powerAnalysis.efficiencyFactor * 100
+                            ).toFixed(0)}
+                            %
                           </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -578,59 +671,86 @@ export default function DCBreakerCalculator(_props: DCBreakerCalculatorProps) {
                       </Grid>
                     </Box>
                   )}
-                  
+
                   {/* Compliance Details */}
                   <Box mt={3}>
-                    <Alert 
-                      severity={result.compliance.standardCompliant && result.compliance.wireCompatible && 
-                               result.compliance.applicationCompliant && result.compliance.temperatureCompliant ? 
-                               "success" : "warning"}
+                    <Alert
+                      severity={
+                        result.compliance.standardCompliant &&
+                        result.compliance.wireCompatible &&
+                        result.compliance.applicationCompliant &&
+                        result.compliance.temperatureCompliant
+                          ? "success"
+                          : "warning"
+                      }
                       sx={{ mb: 2 }}
                     >
-                      <Typography variant="body2" fontWeight="bold" gutterBottom>
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
                         Compliance Status
                       </Typography>
                       <Box>
-                        <Chip 
-                          label="Standard" 
-                          color={getComplianceColor(result.compliance.standardCompliant)}
-                          size="small" 
+                        <Chip
+                          label="Standard"
+                          color={getComplianceColor(
+                            result.compliance.standardCompliant,
+                          )}
+                          size="small"
                           sx={{ mr: 1, mb: 0.5 }}
                         />
-                        <Chip 
-                          label="Wire Compatible" 
-                          color={getComplianceColor(result.compliance.wireCompatible)}
-                          size="small" 
+                        <Chip
+                          label="Wire Compatible"
+                          color={getComplianceColor(
+                            result.compliance.wireCompatible,
+                          )}
+                          size="small"
                           sx={{ mr: 1, mb: 0.5 }}
                         />
-                        <Chip 
-                          label="Application" 
-                          color={getComplianceColor(result.compliance.applicationCompliant)}
-                          size="small" 
+                        <Chip
+                          label="Application"
+                          color={getComplianceColor(
+                            result.compliance.applicationCompliant,
+                          )}
+                          size="small"
                           sx={{ mr: 1, mb: 0.5 }}
                         />
-                        <Chip 
-                          label="Temperature" 
-                          color={getComplianceColor(result.compliance.temperatureCompliant)}
-                          size="small" 
+                        <Chip
+                          label="Temperature"
+                          color={getComplianceColor(
+                            result.compliance.temperatureCompliant,
+                          )}
+                          size="small"
                           sx={{ mb: 0.5 }}
                         />
                       </Box>
                     </Alert>
-                    
+
                     <Typography variant="body2" color="text.secondary">
-                      <strong>Calculation Method:</strong><br />
+                      <strong>Calculation Method:</strong>
+                      <br />
                       {result.calculationMethod}
                     </Typography>
 
                     {/* Breaker Specifications */}
                     <Box mt={2}>
                       <Typography variant="body2" color="text.secondary">
-                        <strong>Primary Recommendation:</strong><br />
-                        {result.breakerRecommendations.primary.rating}A {result.breakerRecommendations.primary.type} breaker<br />
-                        Voltage Rating: {result.breakerRecommendations.primary.voltage}V DC<br />
-                        Standard: {result.breakerRecommendations.primary.standard}<br />
-                        {result.breakerRecommendations.primary.continuousDuty ? 'Continuous Duty' : 'Standard Duty'}
+                        <strong>Primary Recommendation:</strong>
+                        <br />
+                        {result.breakerRecommendations.primary.rating}A{" "}
+                        {result.breakerRecommendations.primary.type} breaker
+                        <br />
+                        Voltage Rating:{" "}
+                        {result.breakerRecommendations.primary.voltage}V DC
+                        <br />
+                        Standard:{" "}
+                        {result.breakerRecommendations.primary.standard}
+                        <br />
+                        {result.breakerRecommendations.primary.continuousDuty
+                          ? "Continuous Duty"
+                          : "Standard Duty"}
                       </Typography>
                     </Box>
                   </Box>
