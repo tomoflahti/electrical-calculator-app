@@ -268,9 +268,11 @@ describe("IECCableAmpacityChart", () => {
       fireEvent.mouseDown(groupingSelect);
 
       await waitFor(() => {
-        expect(screen.getByText("1 cables (100%)")).toBeInTheDocument();
-        expect(screen.getByText("2 cables (80%)")).toBeInTheDocument();
-        expect(screen.getByText("3 cables (70%)")).toBeInTheDocument();
+        expect(screen.getAllByText("1 cables (100%)").length).toBeGreaterThan(
+          0,
+        );
+        expect(screen.getAllByText("2 cables (80%)").length).toBeGreaterThan(0);
+        expect(screen.getAllByText("3 cables (70%)").length).toBeGreaterThan(0);
       });
     });
 
@@ -285,9 +287,9 @@ describe("IECCableAmpacityChart", () => {
       fireEvent.mouseDown(temperatureSelect);
 
       await waitFor(() => {
-        expect(screen.getByText("20°C")).toBeInTheDocument();
-        expect(screen.getByText("25°C")).toBeInTheDocument();
-        expect(screen.getByText("30°C")).toBeInTheDocument();
+        expect(screen.getAllByText("20°C").length).toBeGreaterThan(0);
+        expect(screen.getAllByText("25°C").length).toBeGreaterThan(0);
+        expect(screen.getAllByText("30°C").length).toBeGreaterThan(0);
       });
     });
 

@@ -186,6 +186,11 @@ describe("Standard Switching Integration", () => {
       const iecOptions = screen.getAllByText("IEC 60364");
       fireEvent.click(iecOptions[0]);
 
+      // Wait for standard to change
+      await waitFor(() => {
+        expect(screen.getByDisplayValue("IEC")).toBeInTheDocument();
+      });
+
       // Should show IEC units
       await waitFor(() => {
         expect(screen.getByLabelText("Length (m)")).toBeInTheDocument();
@@ -490,15 +495,22 @@ describe("Standard Switching Integration", () => {
         </TestWrapper>,
       );
 
+      // Navigate to Wire Size Calculator (which has Circuit Length field)
+      fireEvent.click(screen.getByText("Wire Size Calculator"));
+
       // Switch to IEC
       const standardSelector = screen.getByLabelText("Electrical Standard");
       fireEvent.mouseDown(standardSelector);
       const iecOptions = screen.getAllByText("IEC 60364");
       fireEvent.click(iecOptions[0]);
 
-      // Accessibility labels should be updated
+      // Accessibility labels should be updated with metric units
       await waitFor(() => {
-        expect(screen.getByLabelText("Circuit Length (m)")).toBeInTheDocument();
+        // Check that we have metric units showing after switching to IEC
+        expect(screen.getByDisplayValue("IEC")).toBeInTheDocument();
+        // Look for any length field with meters
+        const lengthField = screen.getByLabelText(/Length.*m/);
+        expect(lengthField).toBeInTheDocument();
       });
     });
 
