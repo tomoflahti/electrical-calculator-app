@@ -238,7 +238,21 @@ const WireAreaChart: React.FC<WireAreaChartProps> = ({
               <Scatter
                 data={data}
                 fill="#1f77b4"
-                shape={(props: { cx?: number; cy?: number; payload?: any }) => {
+                shape={(props: {
+                  cx?: number;
+                  cy?: number;
+                  payload?: {
+                    gauge: string;
+                    count: number;
+                    insulationType: string;
+                    conductorArea: number;
+                    insulationArea: number;
+                    totalAreaPerWire: number;
+                    totalArea: number;
+                    totalDiameter?: number;
+                    color: string;
+                  };
+                }) => {
                   const { cx, cy, payload } = props;
                   const color =
                     payload.insulationType === "XLPE" ? "#ff7f0e" : "#1f77b4";

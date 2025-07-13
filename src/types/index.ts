@@ -98,9 +98,9 @@ export interface IECConduitFillResult {
   }>;
 }
 
-// Legacy interfaces for backward compatibility (to be deprecated)
-export interface ConduitFillInput extends NECConduitFillInput {}
-export interface ConduitFillResult extends NECConduitFillResult {}
+// Legacy type aliases for backward compatibility (to be deprecated)
+export type ConduitFillInput = NECConduitFillInput;
+export type ConduitFillResult = NECConduitFillResult;
 
 export interface Project {
   id: string;

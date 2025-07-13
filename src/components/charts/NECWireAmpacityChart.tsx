@@ -173,7 +173,19 @@ const NECWireAmpacityChart: React.FC<NECWireAmpacityChartProps> = ({
     label,
   }: {
     active?: boolean;
-    payload?: Array<{ payload: any }>;
+    payload?: Array<{
+      payload: {
+        awg: string;
+        area: number;
+        baseCapacity: number;
+        adjustedCapacity: number;
+        resistance: number;
+        adjustmentFactor: number;
+        tempFactor: number;
+        totalDerating: number;
+        materialMultiplier: number;
+      };
+    }>;
     label?: string;
   }) => {
     if (active && payload && payload.length) {

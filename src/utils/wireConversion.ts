@@ -87,12 +87,12 @@ export function findMinimumMetricWireSize(requiredMm2: number): number {
  */
 export function convertAwgWireToMetric(awgWire: {
   gauge: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }): {
   gauge: string;
   crossSectionMm2: number;
   awgEquivalent: string;
-  [key: string]: any;
+  [key: string]: unknown;
 } {
   const mm2 = awgToMm2(awgWire.gauge);
   const metricSize = findMinimumMetricWireSize(mm2);

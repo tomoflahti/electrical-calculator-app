@@ -159,7 +159,20 @@ const IECCableAmpacityChart: React.FC<IECCableAmpacityChartProps> = ({
     label,
   }: {
     active?: boolean;
-    payload?: Array<{ payload: any }>;
+    payload?: Array<{
+      payload: {
+        size: string;
+        crossSection: number;
+        baseCapacity: number;
+        adjustedCapacity: number;
+        resistance: number;
+        reactance: number;
+        installationFactor: number;
+        groupingFactor: number;
+        tempFactor: number;
+        totalDerating: number;
+      };
+    }>;
     label?: string;
   }) => {
     if (active && payload && payload.length) {
