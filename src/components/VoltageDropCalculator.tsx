@@ -207,6 +207,7 @@ export default function VoltageDropCalculator({
                     <InputLabel id="wire-gauge-label">{wireLabel}</InputLabel>
                     <Select
                       labelId="wire-gauge-label"
+                      data-testid="wire-gauge-selector"
                       value={input.wireGauge}
                       label={wireLabel}
                       onChange={(e) =>
@@ -254,6 +255,7 @@ export default function VoltageDropCalculator({
                     <InputLabel id="voltage-label">Voltage</InputLabel>
                     <Select
                       labelId="voltage-label"
+                      data-testid="voltage-selector"
                       value={input.voltage}
                       label="Voltage"
                       onChange={(e) =>
