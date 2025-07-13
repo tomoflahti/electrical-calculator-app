@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { handleNumberInput, getNumericValue } from '../utils/inputHelpers';
+import { useState } from "react";
+import { handleNumberInput, getNumericValue } from "../utils/inputHelpers";
 import {
   Card,
   CardContent,
@@ -15,19 +15,26 @@ import {
   Divider,
   Chip,
   LinearProgress,
-  GridLegacy as Grid
-} from '@mui/material';
-import { Calculate, CheckCircle, Error as ErrorIcon, Battery4Bar, Speed, TrendingUp } from '@mui/icons-material';
-import type { 
-  DCApplicationType, 
-  ElectricalStandardId, 
-  DCCalculationInput, 
+  GridLegacy as Grid,
+} from "@mui/material";
+import {
+  Calculate,
+  CheckCircle,
+  Error as ErrorIcon,
+  Battery4Bar,
+  Speed,
+  TrendingUp,
+} from "@mui/icons-material";
+import type {
+  DCApplicationType,
+  ElectricalStandardId,
+  DCCalculationInput,
   DCCalculationResult,
-  DCVoltageSystem
-} from '../types/standards';
-import { calculateDCWireSize, validateDCInput } from '../utils/calculations/dc';
-import { getDCVoltages } from '../standards';
-import DCApplicationSelector from './DCApplicationSelector';
+  DCVoltageSystem,
+} from "../types/standards";
+import { calculateDCWireSize, validateDCInput } from "../utils/calculations/dc";
+import { getDCVoltages } from "../standards";
+import DCApplicationSelector from "./DCApplicationSelector";
 
 interface DCWireCalculatorProps {
   selectedStandard?: ElectricalStandardId;
@@ -41,11 +48,17 @@ interface DCFormInputState {
   ambientTemperature: string;
 }
 
-export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }: DCWireCalculatorProps) {
-  const [selectedApplication, setSelectedApplication] = useState<DCApplicationType>('automotive');
-  const [currentStandard, setCurrentStandard] = useState<ElectricalStandardId>(selectedStandard);
-  const [selectedWireStandard, setSelectedWireStandard] = useState<'NEC' | 'IEC'>('NEC');
-  
+export default function DCWireCalculator({
+  selectedStandard = "DC_AUTOMOTIVE",
+}: DCWireCalculatorProps) {
+  const [selectedApplication, setSelectedApplication] =
+    useState<DCApplicationType>("automotive");
+  const [currentStandard, setCurrentStandard] =
+    useState<ElectricalStandardId>(selectedStandard);
+  const [selectedWireStandard, setSelectedWireStandard] = useState<
+    "NEC" | "IEC"
+  >("NEC");
+
   // Get initial voltage from standard to ensure it's valid
   const getInitialVoltage = (standard: ElectricalStandardId) => {
     const availableVoltages = getDCVoltages(standard);
@@ -53,102 +66,108 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
   };
 
   const initialVoltage = getInitialVoltage(selectedStandard);
-  
+
   const [input, setInput] = useState<DCCalculationInput>({
     current: 20,
     length: 10,
     voltage: initialVoltage,
     voltageSystem: `${initialVoltage}V` as DCVoltageSystem,
-    applicationType: 'automotive',
-    conductorMaterial: 'copper',
+    applicationType: "automotive",
+    conductorMaterial: "copper",
     ambientTemperature: 25,
-    loadType: 'continuous'
+    loadType: "continuous",
   });
 
   // Form input state for better UX (prevents leading zeros and empty->0 conversion)
   const [formInputs, setFormInputs] = useState<DCFormInputState>({
-    current: '20',
-    length: '10',
+    current: "20",
+    length: "10",
     voltage: String(initialVoltage),
-    ambientTemperature: '25'
+    ambientTemperature: "25",
   });
 
   const [result, setResult] = useState<DCCalculationResult | null>(null);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [isCalculating, setIsCalculating] = useState(false);
 
-  const handleInputChange = (field: keyof DCCalculationInput, value: string | number) => {
-    setInput(prev => ({
+  const handleInputChange = (
+    field: keyof DCCalculationInput,
+    value: string | number,
+  ) => {
+    setInput((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
     // Clear results when input changes
     setResult(null);
-    setError('');
+    setError("");
   };
 
   // Handler for form inputs (prevents leading zeros and handles empty values)
-  const handleFormInputChange = (field: keyof DCFormInputState, value: string) => {
+  const handleFormInputChange = (
+    field: keyof DCFormInputState,
+    value: string,
+  ) => {
     const processedValue = handleNumberInput(value, {
-      min: field === 'current' ? 0.1 : field === 'length' ? 1 : 0,
+      min: field === "current" ? 0.1 : field === "length" ? 1 : 0,
       allowDecimals: true,
       allowEmpty: true,
-      emptyValue: ''
+      emptyValue: "",
     });
-    
+
     if (processedValue !== null) {
-      setFormInputs(prev => ({
+      setFormInputs((prev) => ({
         ...prev,
-        [field]: String(processedValue)
+        [field]: String(processedValue),
       }));
     }
   };
 
   const handleApplicationChange = (application: DCApplicationType) => {
     setSelectedApplication(application);
-    setInput(prev => ({
+    setInput((prev) => ({
       ...prev,
-      applicationType: application
+      applicationType: application,
     }));
     setResult(null);
-    setError('');
+    setError("");
   };
 
   const handleStandardChange = (standard: ElectricalStandardId) => {
     setCurrentStandard(standard);
-    
+
     // Update voltage if current voltage not available in new standard
     const newVoltages = getDCVoltages(standard);
     if (newVoltages.length > 0 && !newVoltages.includes(input.voltage)) {
       const newVoltage = newVoltages[0];
-      setInput(prev => ({
+      setInput((prev) => ({
         ...prev,
         voltage: newVoltage,
-        voltageSystem: `${newVoltage}V` as DCVoltageSystem
+        voltageSystem: `${newVoltage}V` as DCVoltageSystem,
       }));
       // Update form state as well
-      setFormInputs(prev => ({
+      setFormInputs((prev) => ({
         ...prev,
-        voltage: String(newVoltage)
+        voltage: String(newVoltage),
       }));
     }
-    
+
     setResult(null);
-    setError('');
+    setError("");
   };
 
-  const handleWireStandardChange = (wireStandard: 'NEC' | 'IEC') => {
+  const handleWireStandardChange = (wireStandard: "NEC" | "IEC") => {
     setSelectedWireStandard(wireStandard);
     // Clear results when wire standard changes
     setResult(null);
-    setError('');
+    setError("");
   };
 
   const handleCalculate = async () => {
     try {
       setIsCalculating(true);
-      setError('');
-      
+      setError("");
+
       // Convert form inputs to numbers for calculation
       const calculationInput: DCCalculationInput = {
         ...input,
@@ -156,24 +175,24 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
         length: getNumericValue(formInputs.length, 10),
         voltage: getNumericValue(formInputs.voltage, 12),
         ambientTemperature: getNumericValue(formInputs.ambientTemperature, 25),
-        wireStandard: selectedWireStandard
+        wireStandard: selectedWireStandard,
       };
-      
+
       // Validate input
       const validationErrors = validateDCInput(calculationInput);
       if (validationErrors.length > 0) {
-        setError(validationErrors.join(', '));
+        setError(validationErrors.join(", "));
         setIsCalculating(false);
         return;
       }
-      
+
       // Simulate calculation delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       const calculationResult = calculateDCWireSize(calculationInput);
       setResult(calculationResult);
     } catch (err) {
-      const errorMessage = (err as Error)?.message || 'DC calculation failed';
+      const errorMessage = (err as Error)?.message || "DC calculation failed";
       setError(errorMessage);
       setResult(null);
     } finally {
@@ -185,10 +204,12 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
   const availableVoltages = getDCVoltages(currentStandard);
 
   // Get efficiency color based on value
-  const getEfficiencyColor = (efficiency: number): 'success' | 'warning' | 'error' => {
-    if (efficiency >= 95) return 'success';
-    if (efficiency >= 90) return 'warning';
-    return 'error';
+  const getEfficiencyColor = (
+    efficiency: number,
+  ): "success" | "warning" | "error" => {
+    if (efficiency >= 95) return "success";
+    if (efficiency >= 90) return "warning";
+    return "error";
   };
 
   return (
@@ -197,7 +218,8 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
         DC Wire Calculator
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Calculate wire size for DC electrical systems including automotive, marine, solar, and telecommunications applications.
+        Calculate wire size for DC electrical systems including automotive,
+        marine, solar, and telecommunications applications.
       </Typography>
 
       {/* Wire Standard Selector */}
@@ -207,11 +229,16 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
             Wire Sizing Standard
           </Typography>
           <FormControl fullWidth sx={{ maxWidth: 350 }}>
-            <InputLabel>Wire Sizing Standard</InputLabel>
+            <InputLabel id="wire-sizing-standard-label">
+              Wire Sizing Standard
+            </InputLabel>
             <Select
+              labelId="wire-sizing-standard-label"
               value={selectedWireStandard}
               label="Wire Sizing Standard"
-              onChange={(e) => handleWireStandardChange(e.target.value as 'NEC' | 'IEC')}
+              onChange={(e) =>
+                handleWireStandardChange(e.target.value as "NEC" | "IEC")
+              }
               data-testid="wire-standard-selector"
             >
               <MenuItem value="NEC">NEC (AWG Wire Gauge)</MenuItem>
@@ -219,10 +246,9 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
             </Select>
           </FormControl>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {selectedWireStandard === 'NEC' 
-              ? 'American Wire Gauge (AWG) sizing system used in North America'
-              : 'Metric cross-sectional area (mm²) sizing system used internationally'
-            }
+            {selectedWireStandard === "NEC"
+              ? "American Wire Gauge (AWG) sizing system used in North America"
+              : "Metric cross-sectional area (mm²) sizing system used internationally"}
           </Typography>
         </CardContent>
       </Card>
@@ -242,59 +268,66 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
               <Typography variant="h6" gutterBottom>
                 Circuit Parameters
               </Typography>
-              
+
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Load Current (A)"
                     type="text"
                     value={formInputs.current}
-                    onChange={(e) => handleFormInputChange('current', e.target.value)}
+                    onChange={(e) =>
+                      handleFormInputChange("current", e.target.value)
+                    }
                     fullWidth
                     required
-                    inputProps={{ 
-                      inputMode: 'decimal',
-                      pattern: '[0-9]*\\.?[0-9]*'
+                    inputProps={{
+                      inputMode: "decimal",
+                      pattern: "[0-9]*\\.?[0-9]*",
                     }}
                     helperText="Continuous operating current"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    label={`Circuit Length (${selectedWireStandard === 'NEC' ? 'ft' : 'm'})`}
+                    label={`Circuit Length (${selectedWireStandard === "NEC" ? "ft" : "m"})`}
                     type="text"
                     value={formInputs.length}
-                    onChange={(e) => handleFormInputChange('length', e.target.value)}
+                    onChange={(e) =>
+                      handleFormInputChange("length", e.target.value)
+                    }
                     fullWidth
                     required
-                    inputProps={{ 
-                      inputMode: 'decimal',
-                      pattern: '[0-9]*\\.?[0-9]*'
+                    inputProps={{
+                      inputMode: "decimal",
+                      pattern: "[0-9]*\\.?[0-9]*",
                     }}
-                    helperText={`One-way distance to load${selectedWireStandard === 'IEC' ? ' (metric)' : ''}`}
+                    helperText={`One-way distance to load${selectedWireStandard === "IEC" ? " (metric)" : ""}`}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel>System Voltage</InputLabel>
+                    <InputLabel id="system-voltage-label">
+                      System Voltage
+                    </InputLabel>
                     <Select
+                      labelId="system-voltage-label"
                       value={input.voltage}
                       label="System Voltage"
                       onChange={(e) => {
                         const voltage = Number(e.target.value);
-                        handleInputChange('voltage', voltage);
-                        handleInputChange('voltageSystem', `${voltage}V`);
+                        handleInputChange("voltage", voltage);
+                        handleInputChange("voltageSystem", `${voltage}V`);
                         // Update form state as well
-                        setFormInputs(prev => ({
+                        setFormInputs((prev) => ({
                           ...prev,
-                          voltage: String(voltage)
+                          voltage: String(voltage),
                         }));
                       }}
                       data-testid="voltage-selector"
                     >
-                      {availableVoltages.map(voltage => (
+                      {availableVoltages.map((voltage) => (
                         <MenuItem key={voltage} value={voltage}>
                           {voltage}V DC
                         </MenuItem>
@@ -302,51 +335,68 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
                     </Select>
                   </FormControl>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel>Conductor Material</InputLabel>
+                    <InputLabel id="conductor-material-label">
+                      Conductor Material
+                    </InputLabel>
                     <Select
+                      labelId="conductor-material-label"
                       value={input.conductorMaterial}
                       label="Conductor Material"
-                      onChange={(e) => handleInputChange('conductorMaterial', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("conductorMaterial", e.target.value)
+                      }
                     >
                       <MenuItem value="copper">Copper</MenuItem>
                       <MenuItem value="aluminum">Aluminum</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Ambient Temperature (°C)"
                     type="text"
                     value={formInputs.ambientTemperature}
-                    onChange={(e) => handleFormInputChange('ambientTemperature', e.target.value)}
+                    onChange={(e) =>
+                      handleFormInputChange(
+                        "ambientTemperature",
+                        e.target.value,
+                      )
+                    }
                     fullWidth
-                    inputProps={{ 
-                      inputMode: 'decimal',
-                      pattern: '[0-9-]*\\.?[0-9]*'
+                    inputProps={{
+                      inputMode: "decimal",
+                      pattern: "[0-9-]*\\.?[0-9]*",
                     }}
                     helperText="Operating environment temperature (-40°C to 150°C)"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel>Load Type</InputLabel>
+                    <InputLabel id="load-type-label">Load Type</InputLabel>
                     <Select
+                      labelId="load-type-label"
                       value={input.loadType}
                       label="Load Type"
-                      onChange={(e) => handleInputChange('loadType', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("loadType", e.target.value)
+                      }
                     >
-                      <MenuItem value="continuous">Continuous (3+ hours)</MenuItem>
-                      <MenuItem value="intermittent">Intermittent (&lt;3 hours)</MenuItem>
+                      <MenuItem value="continuous">
+                        Continuous (3+ hours)
+                      </MenuItem>
+                      <MenuItem value="intermittent">
+                        Intermittent (&lt;3 hours)
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
               </Grid>
-              
+
               <Box mt={3}>
                 <Button
                   variant="contained"
@@ -362,7 +412,7 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
                       Calculating...
                     </Box>
                   ) : (
-                    'Calculate Wire Size'
+                    "Calculate Wire Size"
                   )}
                 </Button>
               </Box>
@@ -376,36 +426,51 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
               <Typography variant="h6" gutterBottom>
                 Calculation Results
               </Typography>
-              
+
               {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                   {error}
                 </Alert>
               )}
-              
+
               {result && (
                 <Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <Box display="flex" alignItems="center" gap={1}>
                         <Typography variant="h3" color="primary">
-                          {result.recommendedWireGauge} {selectedWireStandard === 'NEC' ? 'AWG' : 'mm²'}
+                          {result.recommendedWireGauge}{" "}
+                          {selectedWireStandard === "NEC" ? "AWG" : "mm²"}
                         </Typography>
                         <Chip
-                          icon={result.compliance.ampacityCompliant && result.compliance.voltageDropCompliant ? 
-                            <CheckCircle /> : <ErrorIcon />}
-                          label={result.compliance.ampacityCompliant && result.compliance.voltageDropCompliant ? 
-                            "Compliant" : "Non-Compliant"}
-                          color={result.compliance.ampacityCompliant && result.compliance.voltageDropCompliant ? 
-                            "success" : "error"}
+                          icon={
+                            result.compliance.ampacityCompliant &&
+                            result.compliance.voltageDropCompliant ? (
+                              <CheckCircle />
+                            ) : (
+                              <ErrorIcon />
+                            )
+                          }
+                          label={
+                            result.compliance.ampacityCompliant &&
+                            result.compliance.voltageDropCompliant
+                              ? "Compliant"
+                              : "Non-Compliant"
+                          }
+                          color={
+                            result.compliance.ampacityCompliant &&
+                            result.compliance.voltageDropCompliant
+                              ? "success"
+                              : "error"
+                          }
                         />
                       </Box>
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <Divider sx={{ my: 2 }} />
                     </Grid>
-                    
+
                     {/* Voltage Drop */}
                     <Grid item xs={12} sm={6}>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
@@ -420,7 +485,7 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
                         ({result.voltageDropVolts.toFixed(2)}V)
                       </Typography>
                     </Grid>
-                    
+
                     {/* Power Loss */}
                     <Grid item xs={12} sm={6}>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
@@ -433,7 +498,7 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
                         {result.powerLossWatts.toFixed(1)}W
                       </Typography>
                     </Grid>
-                    
+
                     {/* Efficiency */}
                     <Grid item xs={12} sm={6}>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
@@ -447,13 +512,15 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
                           {result.efficiency.toFixed(1)}%
                         </Typography>
                         <Chip
-                          label={getEfficiencyColor(result.efficiency).toUpperCase()}
+                          label={getEfficiencyColor(
+                            result.efficiency,
+                          ).toUpperCase()}
                           color={getEfficiencyColor(result.efficiency)}
                           size="small"
                         />
                       </Box>
                     </Grid>
-                    
+
                     {/* Ampacity */}
                     <Grid item xs={12} sm={6}>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
@@ -467,29 +534,55 @@ export default function DCWireCalculator({ selectedStandard = 'DC_AUTOMOTIVE' }:
                       </Typography>
                     </Grid>
                   </Grid>
-                  
+
                   {/* Compliance Details */}
                   <Box mt={3}>
-                    <Alert 
-                      severity={result.compliance.ampacityCompliant && result.compliance.voltageDropCompliant ? "success" : "warning"}
+                    <Alert
+                      severity={
+                        result.compliance.ampacityCompliant &&
+                        result.compliance.voltageDropCompliant
+                          ? "success"
+                          : "warning"
+                      }
                       sx={{ mb: 2 }}
                     >
-                      <Typography variant="body2" fontWeight="bold" gutterBottom>
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
                         Compliance Status
                       </Typography>
                       <Typography variant="body2">
-                        ✓ Ampacity: {result.compliance.ampacityCompliant ? 'Compliant' : 'Non-Compliant'}<br/>
-                        ✓ Voltage Drop: {result.compliance.voltageDropCompliant ? 'Compliant' : 'Non-Compliant'}<br/>
-                        ✓ Temperature: {result.compliance.temperatureCompliant ? 'Compliant' : 'Non-Compliant'}<br/>
-                        ✓ Application: {result.compliance.applicationCompliant ? 'Compliant' : 'Non-Compliant'}
+                        ✓ Ampacity:{" "}
+                        {result.compliance.ampacityCompliant
+                          ? "Compliant"
+                          : "Non-Compliant"}
+                        <br />✓ Voltage Drop:{" "}
+                        {result.compliance.voltageDropCompliant
+                          ? "Compliant"
+                          : "Non-Compliant"}
+                        <br />✓ Temperature:{" "}
+                        {result.compliance.temperatureCompliant
+                          ? "Compliant"
+                          : "Non-Compliant"}
+                        <br />✓ Application:{" "}
+                        {result.compliance.applicationCompliant
+                          ? "Compliant"
+                          : "Non-Compliant"}
                       </Typography>
                     </Alert>
-                    
+
                     <Typography variant="body2" color="text.secondary">
-                      <strong>Correction Factors Applied:</strong><br />
-                      • Temperature: {(result.correctionFactors.temperature * 100).toFixed(0)}%<br />
-                      • Application safety margin included<br />
-                      • {input.conductorMaterial === 'aluminum' ? 'Aluminum resistance correction applied' : 'Standard copper resistance'}
+                      <strong>Correction Factors Applied:</strong>
+                      <br />• Temperature:{" "}
+                      {(result.correctionFactors.temperature * 100).toFixed(0)}%
+                      <br />
+                      • Application safety margin included
+                      <br />•{" "}
+                      {input.conductorMaterial === "aluminum"
+                        ? "Aluminum resistance correction applied"
+                        : "Standard copper resistance"}
                     </Typography>
                   </Box>
                 </Box>

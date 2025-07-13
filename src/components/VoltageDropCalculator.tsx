@@ -204,8 +204,9 @@ export default function VoltageDropCalculator({
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel>{wireLabel}</InputLabel>
+                    <InputLabel id="wire-gauge-label">{wireLabel}</InputLabel>
                     <Select
+                      labelId="wire-gauge-label"
                       value={input.wireGauge}
                       label={wireLabel}
                       onChange={(e) =>
@@ -250,8 +251,9 @@ export default function VoltageDropCalculator({
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel>Voltage</InputLabel>
+                    <InputLabel id="voltage-label">Voltage</InputLabel>
                     <Select
+                      labelId="voltage-label"
                       value={input.voltage}
                       label="Voltage"
                       onChange={(e) =>
@@ -269,8 +271,11 @@ export default function VoltageDropCalculator({
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel>Conductor Material</InputLabel>
+                    <InputLabel id="conductor-material-label">
+                      Conductor Material
+                    </InputLabel>
                     <Select
+                      labelId="conductor-material-label"
                       value={input.conductorMaterial}
                       label="Conductor Material"
                       onChange={(e) =>
@@ -285,8 +290,9 @@ export default function VoltageDropCalculator({
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel>Wire Type</InputLabel>
+                    <InputLabel id="wire-type-label">Wire Type</InputLabel>
                     <Select
+                      labelId="wire-type-label"
                       value={input.wireType}
                       label="Wire Type"
                       onChange={(e) =>

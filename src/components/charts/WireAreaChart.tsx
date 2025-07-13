@@ -255,7 +255,7 @@ const WireAreaChart: React.FC<WireAreaChartProps> = ({
                 }) => {
                   const { cx, cy, payload } = props;
                   const color =
-                    payload.insulationType === "XLPE" ? "#ff7f0e" : "#1f77b4";
+                    payload?.insulationType === "XLPE" ? "#ff7f0e" : "#1f77b4";
                   return <circle cx={cx} cy={cy} r={6} fill={color} />;
                 }}
               />

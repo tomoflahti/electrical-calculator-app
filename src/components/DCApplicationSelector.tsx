@@ -9,20 +9,23 @@ import {
   Box,
   Chip,
   Alert,
-  Divider
-} from '@mui/material';
-import { 
-  DirectionsCar, 
-  Sailing, 
-  WbSunny, 
-  Router, 
-  Battery4Bar, 
+  Divider,
+} from "@mui/material";
+import {
+  DirectionsCar,
+  Sailing,
+  WbSunny,
+  Router,
+  Battery4Bar,
   Lightbulb,
-  Factory 
-} from '@mui/icons-material';
-import type { DCApplicationType, ElectricalStandardId } from '../types/standards';
-import { getApplicationStandard } from '../standards/dc/applications';
-import { getDCVoltages } from '../standards';
+  Factory,
+} from "@mui/icons-material";
+import type {
+  DCApplicationType,
+  ElectricalStandardId,
+} from "../types/standards";
+import { getApplicationStandard } from "../standards/dc/applications";
+import { getDCVoltages } from "../standards";
 
 interface DCApplicationSelectorProps {
   selectedApplication: DCApplicationType;
@@ -38,26 +41,25 @@ const APPLICATION_ICONS: Record<DCApplicationType, typeof DirectionsCar> = {
   telecom: Router,
   battery: Battery4Bar,
   led: Lightbulb,
-  industrial: Factory
+  industrial: Factory,
 };
 
 const APPLICATION_STANDARDS: Record<DCApplicationType, ElectricalStandardId> = {
-  automotive: 'DC_AUTOMOTIVE',
-  marine: 'DC_MARINE',
-  solar: 'DC_SOLAR',
-  telecom: 'DC_TELECOM',
-  battery: 'DC_SOLAR', // Use solar standard for battery systems
-  led: 'DC_AUTOMOTIVE', // Use automotive standard for LED systems
-  industrial: 'DC_SOLAR' // Use solar standard for industrial systems
+  automotive: "DC_AUTOMOTIVE",
+  marine: "DC_MARINE",
+  solar: "DC_SOLAR",
+  telecom: "DC_TELECOM",
+  battery: "DC_SOLAR", // Use solar standard for battery systems
+  led: "DC_AUTOMOTIVE", // Use automotive standard for LED systems
+  industrial: "DC_SOLAR", // Use solar standard for industrial systems
 };
 
 export default function DCApplicationSelector({
   selectedApplication,
   onApplicationChange,
   selectedStandard,
-  onStandardChange
+  onStandardChange,
 }: DCApplicationSelectorProps) {
-  
   const handleApplicationChange = (application: DCApplicationType) => {
     onApplicationChange(application);
     // Automatically update standard based on application
@@ -73,43 +75,43 @@ export default function DCApplicationSelector({
 
   const getApplicationDescription = (app: DCApplicationType): string => {
     switch (app) {
-      case 'automotive':
-        return '12V/24V automotive electrical systems with ISO 6722 compliance';
-      case 'marine':
-        return '12V/24V/48V marine electrical systems following ABYC standards';
-      case 'solar':
-        return 'Solar panel and renewable energy systems with efficiency optimization';
-      case 'telecom':
-        return '24V/48V telecommunications and data center power systems';
-      case 'battery':
-        return 'Battery charging and energy storage systems';
-      case 'led':
-        return 'Low voltage LED lighting and control systems';
-      case 'industrial':
-        return 'Industrial DC power systems and motor drives';
+      case "automotive":
+        return "12V/24V automotive electrical systems with ISO 6722 compliance";
+      case "marine":
+        return "12V/24V/48V marine electrical systems following ABYC standards";
+      case "solar":
+        return "Solar panel and renewable energy systems with efficiency optimization";
+      case "telecom":
+        return "24V/48V telecommunications and data center power systems";
+      case "battery":
+        return "Battery charging and energy storage systems";
+      case "led":
+        return "Low voltage LED lighting and control systems";
+      case "industrial":
+        return "Industrial DC power systems and motor drives";
       default:
-        return 'DC electrical system';
+        return "DC electrical system";
     }
   };
 
   const getVoltageDropGuidance = (app: DCApplicationType): string => {
     switch (app) {
-      case 'automotive':
-        return 'Automotive systems require strict voltage drop limits (≤2%) for reliable operation of ECUs and safety systems.';
-      case 'marine':
-        return 'Marine environments require corrosion-resistant materials and ABYC-compliant voltage drop limits (≤3%).';
-      case 'solar':
-        return 'Solar systems prioritize efficiency - minimize voltage drop (≤2%) to maximize energy harvest.';
-      case 'telecom':
-        return 'Telecommunications require extremely tight voltage regulation (≤1%) for system reliability.';
-      case 'battery':
-        return 'Battery charging systems need low voltage drop (≤1.5%) for optimal charging efficiency.';
-      case 'led':
-        return 'LED systems can tolerate higher voltage drop (≤3%) but color consistency may be affected.';
-      case 'industrial':
-        return 'Industrial systems require reliable voltage regulation (≤2%) for consistent motor and control operation.';
+      case "automotive":
+        return "Automotive systems require strict voltage drop limits (≤2%) for reliable operation of ECUs and safety systems.";
+      case "marine":
+        return "Marine environments require corrosion-resistant materials and ABYC-compliant voltage drop limits (≤3%).";
+      case "solar":
+        return "Solar systems prioritize efficiency - minimize voltage drop (≤2%) to maximize energy harvest.";
+      case "telecom":
+        return "Telecommunications require extremely tight voltage regulation (≤1%) for system reliability.";
+      case "battery":
+        return "Battery charging systems need low voltage drop (≤1.5%) for optimal charging efficiency.";
+      case "led":
+        return "LED systems can tolerate higher voltage drop (≤3%) but color consistency may be affected.";
+      case "industrial":
+        return "Industrial systems require reliable voltage regulation (≤2%) for consistent motor and control operation.";
       default:
-        return 'Follow application-specific voltage drop guidelines.';
+        return "Follow application-specific voltage drop guidelines.";
     }
   };
 
@@ -118,17 +120,20 @@ export default function DCApplicationSelector({
       <CardContent>
         <Box display="flex" alignItems="center" gap={1} mb={2}>
           <Icon color="primary" />
-          <Typography variant="h6">
-            DC Application Selection
-          </Typography>
+          <Typography variant="h6">DC Application Selection</Typography>
         </Box>
-        
+
         <FormControl fullWidth sx={{ mb: 3 }}>
-          <InputLabel>DC Application Type</InputLabel>
+          <InputLabel id="dc-application-type-label">
+            DC Application Type
+          </InputLabel>
           <Select
+            labelId="dc-application-type-label"
             value={selectedApplication}
             label="DC Application Type"
-            onChange={(e) => handleApplicationChange(e.target.value as DCApplicationType)}
+            onChange={(e) =>
+              handleApplicationChange(e.target.value as DCApplicationType)
+            }
             data-testid="application-selector"
           >
             <MenuItem value="automotive">
@@ -142,7 +147,7 @@ export default function DCApplicationSelector({
                 </Box>
               </Box>
             </MenuItem>
-            
+
             <MenuItem value="marine">
               <Box display="flex" alignItems="center" gap={1}>
                 <Sailing fontSize="small" />
@@ -154,7 +159,7 @@ export default function DCApplicationSelector({
                 </Box>
               </Box>
             </MenuItem>
-            
+
             <MenuItem value="solar">
               <Box display="flex" alignItems="center" gap={1}>
                 <WbSunny fontSize="small" />
@@ -166,7 +171,7 @@ export default function DCApplicationSelector({
                 </Box>
               </Box>
             </MenuItem>
-            
+
             <MenuItem value="telecom">
               <Box display="flex" alignItems="center" gap={1}>
                 <Router fontSize="small" />
@@ -178,7 +183,7 @@ export default function DCApplicationSelector({
                 </Box>
               </Box>
             </MenuItem>
-            
+
             <MenuItem value="battery">
               <Box display="flex" alignItems="center" gap={1}>
                 <Battery4Bar fontSize="small" />
@@ -190,7 +195,7 @@ export default function DCApplicationSelector({
                 </Box>
               </Box>
             </MenuItem>
-            
+
             <MenuItem value="led">
               <Box display="flex" alignItems="center" gap={1}>
                 <Lightbulb fontSize="small" />
@@ -202,7 +207,7 @@ export default function DCApplicationSelector({
                 </Box>
               </Box>
             </MenuItem>
-            
+
             <MenuItem value="industrial">
               <Box display="flex" alignItems="center" gap={1}>
                 <Factory fontSize="small" />
@@ -223,32 +228,32 @@ export default function DCApplicationSelector({
             <Typography variant="subtitle1" fontWeight="bold">
               {currentApplication.name}
             </Typography>
-            <Chip 
+            <Chip
               label={selectedStandard}
               color="primary"
               size="small"
               variant="outlined"
             />
           </Box>
-          
+
           <Typography variant="body2" color="text.secondary" paragraph>
             {getApplicationDescription(selectedApplication)}
           </Typography>
-          
+
           <Box display="flex" gap={1} mb={2}>
-            <Chip 
-              label={`Voltages: ${availableVoltages.join('V, ')}V`}
+            <Chip
+              label={`Voltages: ${availableVoltages.join("V, ")}V`}
               size="small"
               color="info"
               variant="outlined"
             />
-            <Chip 
+            <Chip
               label={`Voltage Drop: ≤${currentApplication.voltageDropLimits.normal}%`}
               size="small"
               color="success"
               variant="outlined"
             />
-            <Chip 
+            <Chip
               label={`Temp: ${currentApplication.temperatureRange.min}°C to ${currentApplication.temperatureRange.max}°C`}
               size="small"
               color="warning"
@@ -262,7 +267,9 @@ export default function DCApplicationSelector({
         {/* Application-Specific Guidance */}
         <Alert severity="info" sx={{ mb: 2 }}>
           <Typography variant="body2" fontWeight="bold" gutterBottom>
-            {selectedApplication.charAt(0).toUpperCase() + selectedApplication.slice(1)} System Guidelines
+            {selectedApplication.charAt(0).toUpperCase() +
+              selectedApplication.slice(1)}{" "}
+            System Guidelines
           </Typography>
           <Typography variant="body2">
             {getVoltageDropGuidance(selectedApplication)}

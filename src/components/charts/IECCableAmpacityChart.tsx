@@ -359,8 +359,9 @@ const IECCableAmpacityChart: React.FC<IECCableAmpacityChartProps> = ({
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} md={3}>
           <FormControl fullWidth size="small">
-            <InputLabel>Chart Type</InputLabel>
+            <InputLabel id="chart-type-label">Chart Type</InputLabel>
             <Select
+              labelId="chart-type-label"
               value={selectedChartType}
               label="Chart Type"
               onChange={(e) =>
@@ -376,8 +377,9 @@ const IECCableAmpacityChart: React.FC<IECCableAmpacityChartProps> = ({
 
         <Grid item xs={12} md={3}>
           <FormControl fullWidth size="small">
-            <InputLabel>Cables in Group</InputLabel>
+            <InputLabel id="cables-in-group-label">Cables in Group</InputLabel>
             <Select
+              labelId="cables-in-group-label"
               value={selectedGrouping}
               label="Cables in Group"
               onChange={(e) => setSelectedGrouping(e.target.value as number)}
@@ -393,8 +395,11 @@ const IECCableAmpacityChart: React.FC<IECCableAmpacityChartProps> = ({
 
         <Grid item xs={12} md={3}>
           <FormControl fullWidth size="small">
-            <InputLabel>Ambient Temperature</InputLabel>
+            <InputLabel id="ambient-temperature-label">
+              Ambient Temperature
+            </InputLabel>
             <Select
+              labelId="ambient-temperature-label"
               value={ambientTemperature}
               label="Ambient Temperature"
               onChange={(e) => setAmbientTemperature(e.target.value as number)}

@@ -251,7 +251,7 @@ describe("IECCableAmpacityChart", () => {
       fireEvent.mouseDown(chartTypeSelect);
 
       await waitFor(() => {
-        expect(screen.getByText("Bar Chart")).toBeInTheDocument();
+        expect(screen.getAllByText("Bar Chart").length).toBeGreaterThan(0);
         expect(screen.getByText("Line Chart")).toBeInTheDocument();
         expect(screen.getByText("Table View")).toBeInTheDocument();
       });

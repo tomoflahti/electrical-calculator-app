@@ -174,8 +174,9 @@ const VoltageDropChart: React.FC<VoltageDropChartProps> = ({
             Voltage Drop Analysis
           </Typography>
           <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Metric</InputLabel>
+            <InputLabel id="metric-label">Metric</InputLabel>
             <Select
+              labelId="metric-label"
               value={selectedMetric}
               onChange={(e) =>
                 setSelectedMetric(

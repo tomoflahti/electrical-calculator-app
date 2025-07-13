@@ -377,8 +377,9 @@ const NECWireAmpacityChart: React.FC<NECWireAmpacityChartProps> = ({
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} md={3}>
           <FormControl fullWidth size="small">
-            <InputLabel>Chart Type</InputLabel>
+            <InputLabel id="chart-type-label">Chart Type</InputLabel>
             <Select
+              labelId="chart-type-label"
               value={selectedChartType}
               label="Chart Type"
               onChange={(e) =>
@@ -394,8 +395,11 @@ const NECWireAmpacityChart: React.FC<NECWireAmpacityChartProps> = ({
 
         <Grid item xs={12} md={3}>
           <FormControl fullWidth size="small">
-            <InputLabel>Conductors in Group</InputLabel>
+            <InputLabel id="conductors-in-group-label">
+              Conductors in Group
+            </InputLabel>
             <Select
+              labelId="conductors-in-group-label"
               value={selectedConductorCount}
               label="Conductors in Group"
               onChange={(e) =>
@@ -415,8 +419,11 @@ const NECWireAmpacityChart: React.FC<NECWireAmpacityChartProps> = ({
 
         <Grid item xs={12} md={3}>
           <FormControl fullWidth size="small">
-            <InputLabel>Ambient Temperature</InputLabel>
+            <InputLabel id="ambient-temperature-label">
+              Ambient Temperature
+            </InputLabel>
             <Select
+              labelId="ambient-temperature-label"
               value={ambientTemperature}
               label="Ambient Temperature"
               onChange={(e) => setAmbientTemperature(e.target.value as number)}
