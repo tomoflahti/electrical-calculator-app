@@ -480,7 +480,8 @@ export default function UniversalWireCalculator({
                           {formatWireSize(
                             "recommendedWireSize" in result
                               ? result.recommendedWireSize // Router result format
-                              : result.recommendedCableSize, // IEC result format
+                              : (result as any).recommendedCableSize ||
+                                  (result as any).recommendedWireGauge, // Legacy formats
                             selectedStandard,
                           )}
                         </Typography>
@@ -614,7 +615,10 @@ export default function UniversalWireCalculator({
                       <Chip
                         icon={
                           result.compliance &&
-                          result.compliance.currentCompliant ? (
+                          ((result.compliance as any).currentCompliant !==
+                          undefined
+                            ? (result.compliance as any).currentCompliant
+                            : (result.compliance as any).ampacityCompliant) ? (
                             <CheckCircle />
                           ) : (
                             <Error />
@@ -623,7 +627,10 @@ export default function UniversalWireCalculator({
                         label="Current Capacity"
                         color={
                           result.compliance &&
-                          result.compliance.currentCompliant
+                          ((result.compliance as any).currentCompliant !==
+                          undefined
+                            ? (result.compliance as any).currentCompliant
+                            : (result.compliance as any).ampacityCompliant)
                             ? "success"
                             : "error"
                         }

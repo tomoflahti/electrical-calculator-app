@@ -28,9 +28,7 @@ describe("Wire Calculator Input Fields", () => {
 
       // Wait for component to render
       await waitFor(() => {
-        expect(
-          screen.getByText("Cable/Wire Size Calculator"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("AC Wire Size Calculator")).toBeInTheDocument();
       });
 
       // Find the input by its helper text or placeholder

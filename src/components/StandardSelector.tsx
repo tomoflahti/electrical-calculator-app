@@ -11,15 +11,7 @@ import {
   Divider,
   ListSubheader,
 } from "@mui/material";
-import {
-  Public,
-  Flag,
-  Engineering,
-  DirectionsCar,
-  Sailing,
-  WbSunny,
-  Router,
-} from "@mui/icons-material";
+import { Public, Engineering } from "@mui/icons-material";
 import {
   getAllStandards,
   getACStandards,
@@ -46,21 +38,6 @@ export default function StandardSelector({
   );
   const isCurrentDC = isDCStandard(selectedStandard);
 
-  const getStandardIcon = (standardId: ElectricalStandardId) => {
-    switch (standardId) {
-      case "DC_AUTOMOTIVE":
-        return DirectionsCar;
-      case "DC_MARINE":
-        return Sailing;
-      case "DC_SOLAR":
-        return WbSunny;
-      case "DC_TELECOM":
-        return Router;
-      default:
-        return Flag;
-    }
-  };
-
   return (
     <Card sx={{ mb: 3 }}>
       <CardContent>
@@ -86,20 +63,9 @@ export default function StandardSelector({
               <>
                 <ListSubheader>AC Standards (Mains Power)</ListSubheader>
                 {acStandards.map((standard) => {
-                  const IconComponent = getStandardIcon(standard.id);
                   return (
                     <MenuItem key={standard.id} value={standard.id}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <IconComponent fontSize="small" />
-                        <Box>
-                          <Typography variant="body1">
-                            {standard.name}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {standard.fullName}
-                          </Typography>
-                        </Box>
-                      </Box>
+                      {standard.name} - {standard.fullName}
                     </MenuItem>
                   );
                 })}
@@ -111,20 +77,9 @@ export default function StandardSelector({
               <>
                 <ListSubheader>DC Standards (Low Voltage)</ListSubheader>
                 {dcStandards.map((standard) => {
-                  const IconComponent = getStandardIcon(standard.id);
                   return (
                     <MenuItem key={standard.id} value={standard.id}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <IconComponent fontSize="small" color="secondary" />
-                        <Box>
-                          <Typography variant="body1">
-                            {standard.name}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {standard.fullName}
-                          </Typography>
-                        </Box>
-                      </Box>
+                      {standard.name} - {standard.fullName}
                     </MenuItem>
                   );
                 })}
