@@ -29,14 +29,10 @@ import {
   getInstallationMethods,
   formatWireSize,
 } from "../utils/conversions";
-import { isDCStandard } from "../standards";
 import type {
   ElectricalStandardId,
   CableCalculationInput,
   CableCalculationResult,
-  DCCalculationResult,
-  DCVoltageSystem,
-  DCApplicationType,
   InstallationMethod,
 } from "../types/standards";
 import type { WireCalculationResult } from "../types";
@@ -58,15 +54,9 @@ export default function UniversalWireCalculator({
   selectedStandard,
 }: UniversalWireCalculatorProps) {
   const [input, setInput] = useState<CableCalculationInput>(() => {
-    const voltageOpts = getVoltageOptions(selectedStandard);
-    const installationOpts = getInstallationMethods(selectedStandard);
-    const isDC = isDCStandard(selectedStandard);
-
     let initialVoltage: number;
     if (selectedStandard === "NEC") {
       initialVoltage = 120;
-    } else if (isDC) {
-      initialVoltage = voltageOpts.dc?.[0] || 12;
     } else {
       initialVoltage = 230;
     }
@@ -74,8 +64,6 @@ export default function UniversalWireCalculator({
     let initialInstallationMethod: string;
     if (selectedStandard === "NEC") {
       initialInstallationMethod = "conduit";
-    } else if (isDC) {
-      initialInstallationMethod = installationOpts[0]?.id || "automotive";
     } else {
       initialInstallationMethod = "A1";
     }
@@ -104,24 +92,18 @@ export default function UniversalWireCalculator({
   });
 
   const [result, setResult] = useState<
-    | CableCalculationResult
-    | WireCalculationResult
-    | DCCalculationResult
-    | RouterWireResult
-    | null
+    CableCalculationResult | WireCalculationResult | RouterWireResult | null
   >(null);
   const [error, setError] = useState<string>("");
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
 
   const voltageOptions = getVoltageOptions(selectedStandard);
   const installationMethods = getInstallationMethods(selectedStandard);
-  const isCurrentStandardDC = isDCStandard(selectedStandard);
 
   // Get validated values to prevent Material-UI warnings
   const getValidatedVoltage = () => {
-    const availableVoltages = isCurrentStandardDC
-      ? voltageOptions.dc || []
-      : input.voltageSystem === "single"
+    const availableVoltages =
+      input.voltageSystem === "single"
         ? voltageOptions.single
         : voltageOptions.threephase;
     return availableVoltages.includes(input.voltage) ? input.voltage : "";
@@ -135,9 +117,7 @@ export default function UniversalWireCalculator({
   };
 
   const getValidatedVoltageSystem = () => {
-    const availableOptions = isCurrentStandardDC
-      ? ["dc"]
-      : ["single", "three-phase"];
+    const availableOptions = ["single", "three-phase"];
     return availableOptions.includes(input.voltageSystem)
       ? input.voltageSystem
       : "";
@@ -146,30 +126,16 @@ export default function UniversalWireCalculator({
   // Update input when standard changes
   useEffect(() => {
     const voltageOpts = getVoltageOptions(selectedStandard);
-    const installationOpts = getInstallationMethods(selectedStandard);
-    const isDC = isDCStandard(selectedStandard);
 
-    let defaultVoltage: number;
-    let defaultVoltageSystem: "single" | "three-phase" | "dc";
-
-    if (isDC) {
-      // Use first available DC voltage
-      defaultVoltage = voltageOpts.dc?.[0] || 12;
-      defaultVoltageSystem = "dc";
-    } else {
-      // Use AC logic
-      defaultVoltage =
-        input.voltageSystem === "single"
-          ? voltageOpts.single[0]
-          : voltageOpts.threephase[0];
-      defaultVoltageSystem = input.voltageSystem;
-    }
+    // Use AC-only logic
+    const defaultVoltage =
+      input.voltageSystem === "single"
+        ? voltageOpts.single[0]
+        : voltageOpts.threephase[0];
 
     let defaultInstallationMethod: string;
     if (selectedStandard === "NEC") {
       defaultInstallationMethod = "conduit";
-    } else if (isDC) {
-      defaultInstallationMethod = installationOpts[0]?.id || "automotive";
     } else {
       defaultInstallationMethod = "A1";
     }
@@ -178,7 +144,6 @@ export default function UniversalWireCalculator({
       ...prev,
       standard: selectedStandard,
       voltage: defaultVoltage,
-      voltageSystem: defaultVoltageSystem as "single" | "three-phase",
       installationMethod: defaultInstallationMethod as InstallationMethod,
     }));
   }, [selectedStandard, input.voltageSystem]);
@@ -187,7 +152,7 @@ export default function UniversalWireCalculator({
     try {
       setError("");
 
-      // Create unified router input from form data
+      // Create router input for AC calculations only
       const routerInput: RouterWireInput = {
         standard: selectedStandard,
         loadCurrent: getNumericValue(formInputs.loadCurrent, 20),
@@ -200,26 +165,14 @@ export default function UniversalWireCalculator({
         numberOfConductors: getNumericValue(formInputs.numberOfConductors, 3),
         powerFactor: getNumericValue(formInputs.powerFactor, 0.8),
 
-        // DC-specific fields (if applicable)
-        ...(isCurrentStandardDC && {
-          dcVoltageSystem: `${input.voltage}V` as DCVoltageSystem,
-          dcApplicationType: selectedStandard
-            .replace("DC_", "")
-            .toLowerCase() as DCApplicationType,
-          loadType: "continuous",
-          allowableVoltageDropPercent: 2,
-        }),
-
-        // AC-specific fields (if applicable)
-        ...(!isCurrentStandardDC && {
-          temperatureRating: 75 as 60 | 75 | 90,
-          includeNECMultiplier: selectedStandard === "NEC",
-          calculateDerating: true,
-          strictCompliance: true,
-        }),
+        // AC-specific fields
+        temperatureRating: 75 as 60 | 75 | 90,
+        includeNECMultiplier: selectedStandard === "NEC",
+        calculateDerating: true,
+        strictCompliance: true,
       };
 
-      // Use unified router for all calculations
+      // Use unified router for AC calculations
       const calculationResult = calculateWireSize(routerInput);
       setResult(calculationResult);
     } catch (err) {
@@ -265,11 +218,12 @@ export default function UniversalWireCalculator({
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
-        Cable/Wire Size Calculator
+        AC Wire Size Calculator
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Calculate required cable size based on {selectedStandard} standards with
-        proper current capacity and voltage drop considerations.
+        Calculate required cable size for AC electrical systems based on{" "}
+        {selectedStandard} standards with proper current capacity and voltage
+        drop considerations.
       </Typography>
 
       <Grid container spacing={3}>
@@ -319,68 +273,55 @@ export default function UniversalWireCalculator({
                   />
                 </Grid>
 
-                {!isCurrentStandardDC && (
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel id="voltage-system-label">
-                        Voltage System
-                      </InputLabel>
-                      <Select
-                        labelId="voltage-system-label"
-                        value={getValidatedVoltageSystem()}
-                        label="Voltage System"
-                        onChange={(e) => {
-                          const newVoltageSystem = e.target.value as
-                            | "single"
-                            | "three-phase";
-                          const voltageOpts =
-                            getVoltageOptions(selectedStandard);
-                          handleInputChange("voltageSystem", newVoltageSystem);
-                          handleInputChange(
-                            "voltage",
-                            newVoltageSystem === "single"
-                              ? voltageOpts.single[0]
-                              : voltageOpts.threephase[0],
-                          );
-                        }}
-                      >
-                        <MenuItem value="single">Single Phase</MenuItem>
-                        <MenuItem value="three-phase">Three Phase</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                )}
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id="voltage-system-label">
+                      Voltage System
+                    </InputLabel>
+                    <Select
+                      labelId="voltage-system-label"
+                      value={getValidatedVoltageSystem()}
+                      label="Voltage System"
+                      onChange={(e) => {
+                        const newVoltageSystem = e.target.value as
+                          | "single"
+                          | "three-phase";
+                        const voltageOpts = getVoltageOptions(selectedStandard);
+                        handleInputChange("voltageSystem", newVoltageSystem);
+                        handleInputChange(
+                          "voltage",
+                          newVoltageSystem === "single"
+                            ? voltageOpts.single[0]
+                            : voltageOpts.threephase[0],
+                        );
+                      }}
+                    >
+                      <MenuItem value="single">Single Phase</MenuItem>
+                      <MenuItem value="three-phase">Three Phase</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel id="voltage-label">
-                      {isCurrentStandardDC ? "DC Voltage" : "Voltage"}
-                    </InputLabel>
+                    <InputLabel id="voltage-label">Voltage</InputLabel>
                     <Select
                       labelId="voltage-label"
                       value={getValidatedVoltage()}
-                      label={isCurrentStandardDC ? "DC Voltage" : "Voltage"}
+                      label="Voltage"
                       data-testid="voltage-selector"
                       onChange={(e) =>
                         handleInputChange("voltage", Number(e.target.value))
                       }
                     >
-                      {isCurrentStandardDC
-                        ? // Show DC voltage options
-                          (voltageOptions.dc || []).map((v) => (
-                            <MenuItem key={v} value={v}>
-                              {v}V DC
-                            </MenuItem>
-                          ))
-                        : // Show AC voltage options
-                          (input.voltageSystem === "single"
-                            ? voltageOptions.single
-                            : voltageOptions.threephase
-                          ).map((v) => (
-                            <MenuItem key={v} value={v}>
-                              {v}V
-                            </MenuItem>
-                          ))}
+                      {(input.voltageSystem === "single"
+                        ? voltageOptions.single
+                        : voltageOptions.threephase
+                      ).map((v) => (
+                        <MenuItem key={v} value={v}>
+                          {v}V
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -539,9 +480,7 @@ export default function UniversalWireCalculator({
                           {formatWireSize(
                             "recommendedWireSize" in result
                               ? result.recommendedWireSize // Router result format
-                              : "recommendedWireGauge" in result
-                                ? result.recommendedWireGauge // DC result format
-                                : result.recommendedCableSize, // IEC result format
+                              : result.recommendedCableSize, // IEC result format
                             selectedStandard,
                           )}
                         </Typography>
@@ -558,23 +497,14 @@ export default function UniversalWireCalculator({
                               );
                             }
 
-                            // Legacy result formats
+                            // Legacy result formats (AC only)
                             if ("necCompliant" in result.compliance)
                               return result.compliance.necCompliant ? (
                                 <CheckCircle />
                               ) : (
                                 <Error />
                               );
-                            if ("ampacityCompliant" in result.compliance) {
-                              // DC compliance - check if all requirements are met
-                              const dcCompliance = result.compliance;
-                              const isCompliant =
-                                dcCompliance.ampacityCompliant &&
-                                dcCompliance.voltageDropCompliant &&
-                                dcCompliance.temperatureCompliant &&
-                                dcCompliance.applicationCompliant;
-                              return isCompliant ? <CheckCircle /> : <Error />;
-                            }
+
                             return <Error />;
                           })()}
                           label={(() => {
@@ -587,23 +517,12 @@ export default function UniversalWireCalculator({
                                 : "Non-Compliant";
                             }
 
-                            // Legacy result formats
+                            // Legacy result formats (AC only)
                             if ("necCompliant" in result.compliance)
                               return result.compliance.necCompliant
                                 ? "Standard Compliant"
                                 : "Non-Compliant";
-                            if ("ampacityCompliant" in result.compliance) {
-                              // DC compliance - check if all requirements are met
-                              const dcCompliance = result.compliance;
-                              const isCompliant =
-                                dcCompliance.ampacityCompliant &&
-                                dcCompliance.voltageDropCompliant &&
-                                dcCompliance.temperatureCompliant &&
-                                dcCompliance.applicationCompliant;
-                              return isCompliant
-                                ? "Standard Compliant"
-                                : "Non-Compliant";
-                            }
+
                             return "Non-Compliant";
                           })()}
                           color={(() => {
@@ -616,21 +535,12 @@ export default function UniversalWireCalculator({
                                 : "error";
                             }
 
-                            // Legacy result formats
+                            // Legacy result formats (AC only)
                             if ("necCompliant" in result.compliance)
                               return result.compliance.necCompliant
                                 ? "success"
                                 : "error";
-                            if ("ampacityCompliant" in result.compliance) {
-                              // DC compliance - check if all requirements are met
-                              const dcCompliance = result.compliance;
-                              const isCompliant =
-                                dcCompliance.ampacityCompliant &&
-                                dcCompliance.voltageDropCompliant &&
-                                dcCompliance.temperatureCompliant &&
-                                dcCompliance.applicationCompliant;
-                              return isCompliant ? "success" : "error";
-                            }
+
                             return "error";
                           })()}
                         />
@@ -649,13 +559,11 @@ export default function UniversalWireCalculator({
                         {
                           "currentCapacity" in result
                             ? result.currentCapacity // Router result format
-                            : "ampacity" in result
-                              ? result.ampacity // DC result format
-                              : (
-                                  result as WireCalculationResult & {
-                                    currentCapacity?: number;
-                                  }
-                                ).currentCapacity || 0 // IEC result format or fallback
+                            : (
+                                result as WireCalculationResult & {
+                                  currentCapacity?: number;
+                                }
+                              ).currentCapacity || 0 // IEC result format or fallback
                         }
                         A
                       </Typography>
@@ -706,9 +614,7 @@ export default function UniversalWireCalculator({
                       <Chip
                         icon={
                           result.compliance &&
-                          ("ampacityCompliant" in result.compliance
-                            ? result.compliance.ampacityCompliant
-                            : result.compliance.currentCompliant) ? (
+                          result.compliance.currentCompliant ? (
                             <CheckCircle />
                           ) : (
                             <Error />
@@ -717,9 +623,7 @@ export default function UniversalWireCalculator({
                         label="Current Capacity"
                         color={
                           result.compliance &&
-                          ("ampacityCompliant" in result.compliance
-                            ? result.compliance.ampacityCompliant
-                            : result.compliance.currentCompliant)
+                          result.compliance.currentCompliant
                             ? "success"
                             : "error"
                         }

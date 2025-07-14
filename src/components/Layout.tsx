@@ -11,6 +11,8 @@ import {
   ListItemIcon,
   ListItemText,
   ListItemButton,
+  ListSubheader,
+  Divider,
   CssBaseline,
   useTheme,
   useMediaQuery,
@@ -32,20 +34,38 @@ interface LayoutProps {
   onTabChange: (tab: string) => void;
 }
 
-const menuItems = [
-  { id: "wire-calc", label: "Wire Size Calculator", icon: <Cable /> },
-  { id: "voltage-drop", label: "Voltage Drop Calculator", icon: <Calculate /> },
-  { id: "conduit-fill", label: "Conduit Fill Calculator", icon: <Settings /> },
-  { id: "dc-calc", label: "DC Wire Calculator", icon: <Battery4Bar /> },
+const menuSections = [
   {
-    id: "dc-breaker-calc",
-    label: "DC Breaker Calculator",
-    icon: <ElectricalServices />,
+    title: "AC Calculators",
+    items: [
+      { id: "wire-calc", label: "AC Wire Calculator", icon: <Cable /> },
+      {
+        id: "voltage-drop",
+        label: "Voltage Drop Calculator",
+        icon: <Calculate />,
+      },
+      {
+        id: "conduit-fill",
+        label: "Conduit Fill Calculator",
+        icon: <Settings />,
+      },
+      {
+        id: "bs7671-ref-charts",
+        label: "BS7671 Reference Charts",
+        icon: <BarChart />,
+      },
+    ],
   },
   {
-    id: "bs7671-ref-charts",
-    label: "BS7671 Reference Charts",
-    icon: <BarChart />,
+    title: "DC Calculators",
+    items: [
+      { id: "dc-calc", label: "DC Wire Calculator", icon: <Battery4Bar /> },
+      {
+        id: "dc-breaker-calc",
+        label: "DC Breaker Calculator",
+        icon: <ElectricalServices />,
+      },
+    ],
   },
 ];
 
@@ -88,19 +108,29 @@ export default function Layout({
       >
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
-          <List>
-            {menuItems.map((item) => (
-              <ListItem key={item.id} disablePadding>
-                <ListItemButton
-                  selected={activeTab === item.id}
-                  onClick={() => onTabChange(item.id)}
-                >
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.label} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+          {menuSections.map((section, sectionIndex) => (
+            <List
+              key={section.title}
+              subheader={
+                <ListSubheader component="div" id={`section-${sectionIndex}`}>
+                  {section.title}
+                </ListSubheader>
+              }
+            >
+              {section.items.map((item) => (
+                <ListItem key={item.id} disablePadding>
+                  <ListItemButton
+                    selected={activeTab === item.id}
+                    onClick={() => onTabChange(item.id)}
+                  >
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.label} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+              {sectionIndex < menuSections.length - 1 && <Divider />}
+            </List>
+          ))}
         </Box>
       </Drawer>
 
