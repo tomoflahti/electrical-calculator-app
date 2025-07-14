@@ -9,7 +9,6 @@ import {
   Box,
   Chip,
   Divider,
-  ListSubheader,
 } from "@mui/material";
 import { Public, Engineering } from "@mui/icons-material";
 import {
@@ -52,39 +51,43 @@ export default function StandardSelector({
           </InputLabel>
           <Select
             labelId="electrical-standard-label"
+            id="electrical-standard-select"
             value={selectedStandard}
             label="Electrical Standard"
             onChange={(e) =>
               onStandardChange(e.target.value as ElectricalStandardId)
             }
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 200,
+                },
+              },
+            }}
           >
-            {/* AC Standards Group - only show if calculatorType allows */}
-            {(calculatorType === "all" || calculatorType === "ac") && (
-              <>
-                <ListSubheader>AC Standards (Mains Power)</ListSubheader>
-                {acStandards.map((standard) => {
-                  return (
-                    <MenuItem key={standard.id} value={standard.id}>
-                      {standard.name} - {standard.fullName}
-                    </MenuItem>
-                  );
-                })}
-              </>
-            )}
+            {/* AC Standards - only show if calculatorType allows */}
+            {(calculatorType === "all" || calculatorType === "ac") &&
+              acStandards.map((standard) => (
+                <MenuItem
+                  key={standard.id}
+                  value={standard.id}
+                  onClick={() => onStandardChange(standard.id)}
+                >
+                  {standard.name} - {standard.fullName}
+                </MenuItem>
+              ))}
 
-            {/* DC Standards Group - only show if calculatorType allows */}
-            {(calculatorType === "all" || calculatorType === "dc") && (
-              <>
-                <ListSubheader>DC Standards (Low Voltage)</ListSubheader>
-                {dcStandards.map((standard) => {
-                  return (
-                    <MenuItem key={standard.id} value={standard.id}>
-                      {standard.name} - {standard.fullName}
-                    </MenuItem>
-                  );
-                })}
-              </>
-            )}
+            {/* DC Standards - only show if calculatorType allows */}
+            {(calculatorType === "all" || calculatorType === "dc") &&
+              dcStandards.map((standard) => (
+                <MenuItem
+                  key={standard.id}
+                  value={standard.id}
+                  onClick={() => onStandardChange(standard.id)}
+                >
+                  {standard.name} - {standard.fullName}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
 
