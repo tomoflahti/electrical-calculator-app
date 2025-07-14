@@ -134,6 +134,15 @@ export default function UniversalWireCalculator({
       : "";
   };
 
+  const getValidatedVoltageSystem = () => {
+    const availableOptions = isCurrentStandardDC
+      ? ["dc"]
+      : ["single", "three-phase"];
+    return availableOptions.includes(input.voltageSystem)
+      ? input.voltageSystem
+      : "";
+  };
+
   // Update input when standard changes
   useEffect(() => {
     const voltageOpts = getVoltageOptions(selectedStandard);
@@ -318,7 +327,7 @@ export default function UniversalWireCalculator({
                       </InputLabel>
                       <Select
                         labelId="voltage-system-label"
-                        value={input.voltageSystem}
+                        value={getValidatedVoltageSystem()}
                         label="Voltage System"
                         onChange={(e) => {
                           const newVoltageSystem = e.target.value as

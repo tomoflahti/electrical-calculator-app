@@ -4,7 +4,13 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import App from "../App";
 import "@testing-library/jest-dom";
@@ -110,11 +116,15 @@ describe("Standard Switching Integration", () => {
 
       // Switch to IEC standard
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+      });
 
       await waitFor(() => {
         const iecOptions = screen.getAllByText("IEC 60364");
-        fireEvent.click(iecOptions[0]);
+        act(() => {
+          fireEvent.click(iecOptions[0]);
+        });
       });
 
       // Verify IEC is now selected - check for displayValue instead
@@ -132,15 +142,26 @@ describe("Standard Switching Integration", () => {
 
       // Switch to IEC
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
-      const iecOptions = screen.getAllByText("IEC 60364");
-      fireEvent.click(iecOptions[0]);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+      });
+
+      await waitFor(async () => {
+        const iecOptions = screen.getAllByText("IEC 60364");
+        await act(async () => {
+          fireEvent.click(iecOptions[0]);
+        });
+      });
 
       // Switch to voltage drop tab
-      fireEvent.click(screen.getByText("Voltage Drop Calculator"));
+      await act(async () => {
+        fireEvent.click(screen.getByText("Voltage Drop Calculator"));
+      });
 
       // Switch back to wire calculator tab
-      fireEvent.click(screen.getByText("Wire Size Calculator"));
+      await act(async () => {
+        fireEvent.click(screen.getByText("Wire Size Calculator"));
+      });
 
       // IEC should still be selected
       expect(screen.getByDisplayValue("IEC")).toBeInTheDocument();
@@ -160,9 +181,16 @@ describe("Standard Switching Integration", () => {
 
       // Switch to IEC
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
-      const iecOptions = screen.getAllByText("IEC 60364");
-      fireEvent.click(iecOptions[0]);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+      });
+
+      await waitFor(async () => {
+        const iecOptions = screen.getAllByText("IEC 60364");
+        await act(async () => {
+          fireEvent.click(iecOptions[0]);
+        });
+      });
 
       // Should now show IEC units
       await waitFor(() => {
@@ -178,13 +206,22 @@ describe("Standard Switching Integration", () => {
       );
 
       // Navigate to voltage drop calculator
-      fireEvent.click(screen.getByText("Voltage Drop Calculator"));
+      await act(async () => {
+        fireEvent.click(screen.getByText("Voltage Drop Calculator"));
+      });
 
       // Switch to IEC
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
-      const iecOptions = screen.getAllByText("IEC 60364");
-      fireEvent.click(iecOptions[0]);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+      });
+
+      await waitFor(async () => {
+        const iecOptions = screen.getAllByText("IEC 60364");
+        await act(async () => {
+          fireEvent.click(iecOptions[0]);
+        });
+      });
 
       // Wait for standard to change
       await waitFor(() => {
@@ -208,13 +245,22 @@ describe("Standard Switching Integration", () => {
       );
 
       // Navigate to conduit fill calculator
-      fireEvent.click(screen.getByText("Conduit Fill Calculator"));
+      await act(async () => {
+        fireEvent.click(screen.getByText("Conduit Fill Calculator"));
+      });
 
       // Switch to IEC
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
-      const iecOptions = screen.getAllByText("IEC 60364");
-      fireEvent.click(iecOptions[0]);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+      });
+
+      await waitFor(async () => {
+        const iecOptions = screen.getAllByText("IEC 60364");
+        await act(async () => {
+          fireEvent.click(iecOptions[0]);
+        });
+      });
 
       // Should show IEC units
       await waitFor(() => {
@@ -270,13 +316,22 @@ describe("Standard Switching Integration", () => {
         );
       }
 
-      fireEvent.change(currentInput, { target: { value: "25" } });
+      await act(async () => {
+        fireEvent.change(currentInput, { target: { value: "25" } });
+      });
 
       // Switch to IEC
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
-      const iecOptions = screen.getAllByText("IEC 60364");
-      fireEvent.click(iecOptions[0]);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+      });
+
+      await waitFor(async () => {
+        const iecOptions = screen.getAllByText("IEC 60364");
+        await act(async () => {
+          fireEvent.click(iecOptions[0]);
+        });
+      });
 
       // Wait for standard to change
       await waitFor(() => {
@@ -297,7 +352,9 @@ describe("Standard Switching Integration", () => {
       );
 
       // Navigate to voltage drop calculator
-      fireEvent.click(screen.getByText("Voltage Drop Calculator"));
+      await act(async () => {
+        fireEvent.click(screen.getByText("Voltage Drop Calculator"));
+      });
 
       // Wait for component to load and verify NEC is selected
       await waitFor(
@@ -315,13 +372,22 @@ describe("Standard Switching Integration", () => {
         .getByTestId("length-input")
         .querySelector("input") as HTMLInputElement;
 
-      fireEvent.change(lengthInput, { target: { value: "100" } });
+      await act(async () => {
+        fireEvent.change(lengthInput, { target: { value: "100" } });
+      });
 
       // Switch to IEC
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
-      const iecOptions = screen.getAllByText("IEC 60364");
-      fireEvent.click(iecOptions[0]);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+      });
+
+      await waitFor(async () => {
+        const iecOptions = screen.getAllByText("IEC 60364");
+        await act(async () => {
+          fireEvent.click(iecOptions[0]);
+        });
+      });
 
       // Wait for standard to change
       await waitFor(
@@ -351,17 +417,28 @@ describe("Standard Switching Integration", () => {
       );
 
       // Navigate to conduit fill calculator
-      fireEvent.click(screen.getByText("Conduit Fill Calculator"));
+      await act(async () => {
+        fireEvent.click(screen.getByText("Conduit Fill Calculator"));
+      });
 
       // Select 12 AWG
       const wireGaugeSelect = screen.getByDisplayValue("12");
-      fireEvent.change(wireGaugeSelect, { target: { value: "12" } });
+      await act(async () => {
+        fireEvent.change(wireGaugeSelect, { target: { value: "12" } });
+      });
 
       // Switch to IEC
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
-      const iecOptions = screen.getAllByText("IEC 60364");
-      fireEvent.click(iecOptions[0]);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+      });
+
+      await waitFor(async () => {
+        const iecOptions = screen.getAllByText("IEC 60364");
+        await act(async () => {
+          fireEvent.click(iecOptions[0]);
+        });
+      });
 
       // Should convert to approximately 4 mm²
       await waitFor(() => {
@@ -383,7 +460,9 @@ describe("Standard Switching Integration", () => {
       );
 
       // Perform calculation
-      fireEvent.click(screen.getByText("Calculate Wire Size"));
+      await act(async () => {
+        fireEvent.click(screen.getByText("Calculate Wire Size"));
+      });
 
       // Verify results are shown
       await waitFor(() => {
@@ -392,9 +471,11 @@ describe("Standard Switching Integration", () => {
 
       // Switch standard
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
-      const iecOptions = screen.getAllByText("IEC 60364");
-      fireEvent.click(iecOptions[0]);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+        const iecOptions = screen.getAllByText("IEC 60364");
+        fireEvent.click(iecOptions[0]);
+      });
 
       // Results should be cleared
       await waitFor(() => {
@@ -412,16 +493,22 @@ describe("Standard Switching Integration", () => {
       );
 
       // Navigate to voltage drop calculator
-      fireEvent.click(screen.getByText("Voltage Drop Calculator"));
+      await act(async () => {
+        fireEvent.click(screen.getByText("Voltage Drop Calculator"));
+      });
 
       // Perform calculation
-      fireEvent.click(screen.getByText("Calculate Voltage Drop"));
+      await act(async () => {
+        fireEvent.click(screen.getByText("Calculate Voltage Drop"));
+      });
 
       // Switch standard
       const standardSelector = screen.getByLabelText("Electrical Standard");
-      fireEvent.mouseDown(standardSelector);
-      const iecOptions = screen.getAllByText("IEC 60364");
-      fireEvent.click(iecOptions[0]);
+      await act(async () => {
+        fireEvent.mouseDown(standardSelector);
+        const iecOptions = screen.getAllByText("IEC 60364");
+        fireEvent.click(iecOptions[0]);
+      });
 
       // Results should be cleared
       await waitFor(() => {

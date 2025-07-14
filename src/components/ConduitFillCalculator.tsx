@@ -251,6 +251,22 @@ export default function ConduitFillCalculator({
     }
   };
 
+  // Get validated values to prevent Material-UI warnings
+  const getValidatedConduitType = () => {
+    const availableTypes = getConduitTypes().map((type) => type.value);
+    return availableTypes.includes(conduitType) ? conduitType : "";
+  };
+
+  const getValidatedWireGauge = (gauge: string) => {
+    const availableGauges = getWireOptions().map((option) => option.value);
+    return availableGauges.includes(gauge) ? gauge : "";
+  };
+
+  const getValidatedInsulation = (insulation: string) => {
+    const availableTypes = getInsulationTypes().map((type) => type.value);
+    return availableTypes.includes(insulation) ? insulation : "";
+  };
+
   const standardName = selectedStandard === "IEC" ? "IEC 60364" : "NEC";
 
   return (
@@ -282,7 +298,7 @@ export default function ConduitFillCalculator({
                     </InputLabel>
                     <Select
                       labelId="conduit-type-label"
-                      value={conduitType}
+                      value={getValidatedConduitType()}
                       label="Conduit Type"
                       onChange={(e) => setConduitType(e.target.value)}
                     >
@@ -457,7 +473,7 @@ export default function ConduitFillCalculator({
                       <TableCell>
                         <FormControl size="small" sx={{ minWidth: 80 }}>
                           <Select
-                            value={wire.gauge}
+                            value={getValidatedWireGauge(wire.gauge)}
                             onChange={(e) =>
                               updateWire(wire.id, "gauge", e.target.value)
                             }
@@ -490,7 +506,7 @@ export default function ConduitFillCalculator({
                       <TableCell>
                         <FormControl size="small" sx={{ minWidth: 80 }}>
                           <Select
-                            value={wire.insulation}
+                            value={getValidatedInsulation(wire.insulation)}
                             onChange={(e) =>
                               updateWire(wire.id, "insulation", e.target.value)
                             }
