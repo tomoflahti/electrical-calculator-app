@@ -117,6 +117,23 @@ export default function UniversalWireCalculator({
   const installationMethods = getInstallationMethods(selectedStandard);
   const isCurrentStandardDC = isDCStandard(selectedStandard);
 
+  // Get validated values to prevent Material-UI warnings
+  const getValidatedVoltage = () => {
+    const availableVoltages = isCurrentStandardDC
+      ? voltageOptions.dc || []
+      : input.voltageSystem === "single"
+        ? voltageOptions.single
+        : voltageOptions.threephase;
+    return availableVoltages.includes(input.voltage) ? input.voltage : "";
+  };
+
+  const getValidatedInstallationMethod = () => {
+    const availableMethods = installationMethods.map((method) => method.id);
+    return availableMethods.includes(input.installationMethod)
+      ? input.installationMethod
+      : "";
+  };
+
   // Update input when standard changes
   useEffect(() => {
     const voltageOpts = getVoltageOptions(selectedStandard);
@@ -332,7 +349,7 @@ export default function UniversalWireCalculator({
                     </InputLabel>
                     <Select
                       labelId="voltage-label"
-                      value={input.voltage}
+                      value={getValidatedVoltage()}
                       label={isCurrentStandardDC ? "DC Voltage" : "Voltage"}
                       data-testid="voltage-selector"
                       onChange={(e) =>
@@ -385,7 +402,7 @@ export default function UniversalWireCalculator({
                     </InputLabel>
                     <Select
                       labelId="installation-method-label"
-                      value={input.installationMethod}
+                      value={getValidatedInstallationMethod()}
                       label="Installation Method"
                       onChange={(e) =>
                         handleInputChange("installationMethod", e.target.value)

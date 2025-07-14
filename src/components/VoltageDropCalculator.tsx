@@ -22,11 +22,15 @@ import {
 } from "@mui/icons-material";
 import { calculateWireSize } from "../utils/calculations/wireCalculatorRouter";
 import type { VoltageDropInput, VoltageDropResult } from "../types";
-import type { ElectricalStandardId } from "../types/standards";
+import type {
+  ElectricalStandardId,
+  InstallationMethod,
+} from "../types/standards";
 import { WIRE_GAUGES } from "../utils/necTables";
 import { IEC_CABLE_CROSS_SECTIONS } from "../standards/iec/cableTables";
 import {
   getVoltageOptions,
+  getInstallationMethods,
   feetToMeters,
   metersToFeet,
 } from "../utils/conversions";
@@ -38,14 +42,44 @@ interface VoltageDropCalculatorProps {
 export default function VoltageDropCalculator({
   selectedStandard = "NEC",
 }: VoltageDropCalculatorProps) {
+  // Get initial voltage based on standard
+  const getInitialVoltage = (standard: ElectricalStandardId) => {
+    const voltageOptions = getVoltageOptions(
+      standard === "IEC" ? "IEC" : "NEC",
+    );
+    return voltageOptions.single[0] || voltageOptions.threephase[0] || 120;
+  };
+
+  // Get initial installation method based on standard
+  const getInitialInstallationMethod = (
+    standard: ElectricalStandardId,
+  ): InstallationMethod => {
+    const methods = getInstallationMethods(standard);
+    return (methods[0]?.id as InstallationMethod) || "conduit";
+  };
+
+  // Get initial wire gauge based on standard
+  const getInitialWireGauge = (standard: ElectricalStandardId) => {
+    if (standard === "IEC" || standard === "BS7671") {
+      return "2.5"; // Default IEC mm² size
+    } else {
+      return "12"; // Default NEC AWG size
+    }
+  };
+
   const [input, setInput] = useState<VoltageDropInput>({
-    wireGauge: selectedStandard === "IEC" ? "2.5" : "12",
+    wireGauge: getInitialWireGauge(selectedStandard),
     current: 20,
     length: selectedStandard === "IEC" ? 30.48 : 100,
-    voltage: selectedStandard === "IEC" ? 230 : 120,
+    voltage: getInitialVoltage(selectedStandard),
     conductorMaterial: "copper",
     wireType: "single",
   });
+
+  const [installationMethod, setInstallationMethod] =
+    useState<InstallationMethod>(
+      getInitialInstallationMethod(selectedStandard),
+    );
 
   const [result, setResult] = useState<VoltageDropResult | null>(null);
   const [error, setError] = useState<string>("");
@@ -63,7 +97,7 @@ export default function VoltageDropCalculator({
       setInput((prev) => {
         const newInput = { ...prev };
 
-        // Convert length units
+        // Convert units and set valid default values for the new standard
         if (prevStandard === "NEC" && selectedStandard === "IEC") {
           newInput.length = feetToMeters(prev.length);
           // Convert AWG to mm²
@@ -72,11 +106,8 @@ export default function VoltageDropCalculator({
           else if (prev.wireGauge === "10") newInput.wireGauge = "6";
           else if (prev.wireGauge === "8") newInput.wireGauge = "10";
           else newInput.wireGauge = "2.5";
-          // Convert voltage
-          if (prev.voltage === 120) newInput.voltage = 230;
-          else if (prev.voltage === 240) newInput.voltage = 400;
-          else if (prev.voltage === 277) newInput.voltage = 400;
-          else if (prev.voltage === 480) newInput.voltage = 400;
+          // Set valid IEC voltage
+          newInput.voltage = getInitialVoltage(selectedStandard);
         } else if (prevStandard === "IEC" && selectedStandard === "NEC") {
           newInput.length = metersToFeet(prev.length);
           // Convert mm² to AWG
@@ -85,13 +116,29 @@ export default function VoltageDropCalculator({
           else if (prev.wireGauge === "6") newInput.wireGauge = "10";
           else if (prev.wireGauge === "10") newInput.wireGauge = "8";
           else newInput.wireGauge = "12";
-          // Convert voltage
-          if (prev.voltage === 230) newInput.voltage = 120;
-          else if (prev.voltage === 400) newInput.voltage = 240;
+          // Set valid NEC voltage
+          newInput.voltage = getInitialVoltage(selectedStandard);
+        } else {
+          // For any other standard change, ensure valid voltage and wire gauge
+          const newVoltageOptions = getVoltageOptions(
+            selectedStandard === "IEC" ? "IEC" : "NEC",
+          );
+          const allNewVoltages = [
+            ...newVoltageOptions.single,
+            ...newVoltageOptions.threephase,
+          ];
+          if (!allNewVoltages.includes(prev.voltage)) {
+            newInput.voltage = getInitialVoltage(selectedStandard);
+          }
+          // Ensure wire gauge is valid for the new standard
+          newInput.wireGauge = getInitialWireGauge(selectedStandard);
         }
 
         return newInput;
       });
+
+      // Update installation method for the new standard
+      setInstallationMethod(getInitialInstallationMethod(selectedStandard));
 
       setPrevStandard(selectedStandard);
     }
@@ -112,12 +159,7 @@ export default function VoltageDropCalculator({
         conductorMaterial: input.conductorMaterial,
         powerFactor: 0.8,
         ambientTemperature: 30,
-        installationMethod:
-          selectedStandard === "IEC"
-            ? "B1"
-            : selectedStandard === "BS7671"
-              ? "A1"
-              : "conduit",
+        installationMethod,
         temperatureRating: selectedStandard === "NEC" ? 75 : undefined,
         numberOfConductors: 3,
       });
@@ -166,6 +208,25 @@ export default function VoltageDropCalculator({
     }
   };
 
+  // Get validated values to prevent Material-UI warnings
+  const getValidatedWireGauge = () => {
+    const availableOptions = getWireOptions().map((option) => option.value);
+    return availableOptions.includes(input.wireGauge) ? input.wireGauge : "";
+  };
+
+  const getValidatedVoltage = () => {
+    return allVoltageOptions.includes(input.voltage) ? input.voltage : "";
+  };
+
+  const getValidatedInstallationMethod = () => {
+    const availableMethods = getInstallationMethods(selectedStandard).map(
+      (method) => method.id,
+    );
+    return availableMethods.includes(installationMethod)
+      ? installationMethod
+      : "";
+  };
+
   // Get voltage options based on standard
   const voltageOptions = getVoltageOptions(
     selectedStandard === "IEC" ? "IEC" : "NEC",
@@ -208,7 +269,7 @@ export default function VoltageDropCalculator({
                     <Select
                       labelId="wire-gauge-label"
                       data-testid="wire-gauge-selector"
-                      value={input.wireGauge}
+                      value={getValidatedWireGauge()}
                       label={wireLabel}
                       onChange={(e) =>
                         handleInputChange("wireGauge", e.target.value)
@@ -247,6 +308,7 @@ export default function VoltageDropCalculator({
                     fullWidth
                     required
                     inputProps={{ min: 0, step: lengthUnit === "m" ? 0.1 : 1 }}
+                    data-testid="length-input"
                   />
                 </Grid>
 
@@ -256,7 +318,7 @@ export default function VoltageDropCalculator({
                     <Select
                       labelId="voltage-label"
                       data-testid="voltage-selector"
-                      value={input.voltage}
+                      value={getValidatedVoltage()}
                       label="Voltage"
                       onChange={(e) =>
                         handleInputChange("voltage", Number(e.target.value))
@@ -303,6 +365,32 @@ export default function VoltageDropCalculator({
                     >
                       <MenuItem value="single">Single Phase</MenuItem>
                       <MenuItem value="three-phase">Three Phase</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id="installation-method-label">
+                      Installation Method
+                    </InputLabel>
+                    <Select
+                      labelId="installation-method-label"
+                      value={getValidatedInstallationMethod()}
+                      label="Installation Method"
+                      onChange={(e) =>
+                        setInstallationMethod(
+                          e.target.value as InstallationMethod,
+                        )
+                      }
+                    >
+                      {getInstallationMethods(selectedStandard).map(
+                        (method) => (
+                          <MenuItem key={method.id} value={method.id}>
+                            {method.name}
+                          </MenuItem>
+                        ),
+                      )}
                     </Select>
                   </FormControl>
                 </Grid>

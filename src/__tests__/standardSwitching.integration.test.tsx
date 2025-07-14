@@ -299,44 +299,21 @@ describe("Standard Switching Integration", () => {
       // Navigate to voltage drop calculator
       fireEvent.click(screen.getByText("Voltage Drop Calculator"));
 
-      // Wait for components to load with generous timeout
+      // Wait for component to load and verify NEC is selected
       await waitFor(
         () => {
           expect(
             screen.getAllByText("Voltage Drop Calculator")[0],
           ).toBeInTheDocument();
-          expect(
-            screen.getByLabelText("Electrical Standard"),
-          ).toBeInTheDocument();
+          expect(screen.getByDisplayValue("NEC")).toBeInTheDocument();
         },
-        { timeout: 10000 },
+        { timeout: 2000 },
       );
 
-      // Try to find length input with fallback
-      let lengthInput;
-      try {
-        lengthInput = await waitFor(
-          () => {
-            return screen.getByLabelText("Length (ft)");
-          },
-          { timeout: 3000 },
-        );
-      } catch {
-        // Fallback: look for any input that might be length-related
-        lengthInput = await waitFor(
-          () => {
-            const inputs = screen.getAllByRole("textbox");
-            return (
-              inputs.find(
-                (input) =>
-                  input.getAttribute("label")?.includes("Length") ||
-                  (input as HTMLInputElement).value === "100", // default length value
-              ) || inputs[1]
-            ); // fallback to second input (usually length)
-          },
-          { timeout: 2000 },
-        );
-      }
+      // Find length input using test ID and get the actual input element
+      const lengthInput = screen
+        .getByTestId("length-input")
+        .querySelector("input") as HTMLInputElement;
 
       fireEvent.change(lengthInput, { target: { value: "100" } });
 
@@ -347,32 +324,24 @@ describe("Standard Switching Integration", () => {
       fireEvent.click(iecOptions[0]);
 
       // Wait for standard to change
-      await waitFor(() => {
-        expect(screen.getByDisplayValue("IEC")).toBeInTheDocument();
-      });
-
-      // Length should be converted to meters (flexible checking)
       await waitFor(
         () => {
-          // Try to find the meter input or check if the value was converted
-          try {
-            const meterInput = screen.getByLabelText(
-              "Length (m)",
-            ) as HTMLInputElement;
-            expect(parseFloat(meterInput.value)).toBeCloseTo(30.48, 1);
-          } catch {
-            // Fallback: check if any input has the converted value
-            const inputs = screen.getAllByRole("textbox");
-            const hasConvertedValue = inputs.some((input) => {
-              const value = parseFloat((input as HTMLInputElement).value);
-              return value > 30 && value < 31; // approximately 30.48
-            });
-            expect(hasConvertedValue).toBeTruthy();
-          }
+          expect(screen.getByDisplayValue("IEC")).toBeInTheDocument();
         },
-        { timeout: 5000 },
+        { timeout: 2000 },
       );
-    }, 15000);
+
+      // Verify length converted to meters
+      await waitFor(
+        () => {
+          const lengthInputAfter = screen
+            .getByTestId("length-input")
+            .querySelector("input") as HTMLInputElement;
+          expect(parseFloat(lengthInputAfter.value)).toBeCloseTo(30.48, 1);
+        },
+        { timeout: 2000 },
+      );
+    });
 
     it("should convert wire gauges when switching standards in ConduitFillCalculator", async () => {
       render(
@@ -601,9 +570,14 @@ describe("Standard Switching Integration", () => {
       fireEvent.click(screen.getByText("Voltage Drop Calculator"));
 
       // Wait for tab to load
-      await waitFor(() => {
-        expect(screen.getByText("Voltage Drop Calculator")).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          expect(
+            screen.getAllByText("Voltage Drop Calculator")[0],
+          ).toBeInTheDocument();
+        },
+        { timeout: 2000 },
+      );
 
       // Switch to IEC
       const standardSelector = screen.getByLabelText("Electrical Standard");
@@ -612,20 +586,28 @@ describe("Standard Switching Integration", () => {
       fireEvent.click(iecOptions[0]);
 
       // Wait for standard to change
-      await waitFor(() => {
-        expect(screen.getByDisplayValue("IEC")).toBeInTheDocument();
-      });
-
-      // URL should reflect current state (we can't test actual URL changes in JSDOM,
-      // but we can test that the state is maintained)
       await waitFor(
         () => {
-          expect(
-            screen.getAllByText("Voltage Drop Calculator")[0],
-          ).toBeInTheDocument();
           expect(screen.getByDisplayValue("IEC")).toBeInTheDocument();
         },
-        { timeout: 5000 },
+        { timeout: 2000 },
+      );
+
+      // Verify state is maintained across tab switches
+      fireEvent.click(screen.getByText("Wire Size Calculator"));
+      await waitFor(
+        () => {
+          expect(screen.getByDisplayValue("IEC")).toBeInTheDocument();
+        },
+        { timeout: 2000 },
+      );
+
+      fireEvent.click(screen.getByText("Voltage Drop Calculator"));
+      await waitFor(
+        () => {
+          expect(screen.getByDisplayValue("IEC")).toBeInTheDocument();
+        },
+        { timeout: 2000 },
       );
     });
   });
