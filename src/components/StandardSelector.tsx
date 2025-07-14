@@ -30,11 +30,13 @@ import type { ElectricalStandardId } from "../types/standards";
 interface StandardSelectorProps {
   selectedStandard: ElectricalStandardId;
   onStandardChange: (standard: ElectricalStandardId) => void;
+  calculatorType?: "ac" | "dc" | "all";
 }
 
 export default function StandardSelector({
   selectedStandard,
   onStandardChange,
+  calculatorType = "all",
 }: StandardSelectorProps) {
   const acStandards = getACStandards();
   const dcStandards = getDCStandards();
@@ -78,51 +80,71 @@ export default function StandardSelector({
               onStandardChange(e.target.value as ElectricalStandardId)
             }
           >
-            {/* AC Standards Group */}
-            <Box sx={{ p: 1, bgcolor: "action.hover" }}>
-              <Typography variant="caption" fontWeight="bold" color="primary">
-                AC Standards (Mains Power)
-              </Typography>
-            </Box>
-            {acStandards.map((standard) => {
-              const IconComponent = getStandardIcon(standard.id);
-              return (
-                <MenuItem key={standard.id} value={standard.id}>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <IconComponent fontSize="small" />
-                    <Box>
-                      <Typography variant="body1">{standard.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {standard.fullName}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </MenuItem>
-              );
-            })}
+            {/* AC Standards Group - only show if calculatorType allows */}
+            {(calculatorType === "all" || calculatorType === "ac") && (
+              <>
+                <Box sx={{ p: 1, bgcolor: "action.hover" }}>
+                  <Typography
+                    variant="caption"
+                    fontWeight="bold"
+                    color="primary"
+                  >
+                    AC Standards (Mains Power)
+                  </Typography>
+                </Box>
+                {acStandards.map((standard) => {
+                  const IconComponent = getStandardIcon(standard.id);
+                  return (
+                    <MenuItem key={standard.id} value={standard.id}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <IconComponent fontSize="small" />
+                        <Box>
+                          <Typography variant="body1">
+                            {standard.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {standard.fullName}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </MenuItem>
+                  );
+                })}
+              </>
+            )}
 
-            {/* DC Standards Group */}
-            <Box sx={{ p: 1, bgcolor: "action.hover" }}>
-              <Typography variant="caption" fontWeight="bold" color="secondary">
-                DC Standards (Low Voltage)
-              </Typography>
-            </Box>
-            {dcStandards.map((standard) => {
-              const IconComponent = getStandardIcon(standard.id);
-              return (
-                <MenuItem key={standard.id} value={standard.id}>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <IconComponent fontSize="small" color="secondary" />
-                    <Box>
-                      <Typography variant="body1">{standard.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {standard.fullName}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </MenuItem>
-              );
-            })}
+            {/* DC Standards Group - only show if calculatorType allows */}
+            {(calculatorType === "all" || calculatorType === "dc") && (
+              <>
+                <Box sx={{ p: 1, bgcolor: "action.hover" }}>
+                  <Typography
+                    variant="caption"
+                    fontWeight="bold"
+                    color="secondary"
+                  >
+                    DC Standards (Low Voltage)
+                  </Typography>
+                </Box>
+                {dcStandards.map((standard) => {
+                  const IconComponent = getStandardIcon(standard.id);
+                  return (
+                    <MenuItem key={standard.id} value={standard.id}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <IconComponent fontSize="small" color="secondary" />
+                        <Box>
+                          <Typography variant="body1">
+                            {standard.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {standard.fullName}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </MenuItem>
+                  );
+                })}
+              </>
+            )}
           </Select>
         </FormControl>
 

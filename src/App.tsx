@@ -4,6 +4,7 @@ import { Box, CircularProgress } from "@mui/material";
 import Layout from "./components/Layout";
 import StandardSelector from "./components/StandardSelector";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { isDCStandard } from "./standards";
 import type { ElectricalStandardId } from "./types/standards";
 
 // Lazy load calculator components for code splitting
@@ -52,6 +53,21 @@ function App() {
     const timer = setTimeout(preloadCalculators, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Handle standard switching when changing between AC and DC tabs
+  useEffect(() => {
+    const isACTab = activeTab !== "dc-calc" && activeTab !== "dc-breaker-calc";
+    const currentStandardIsDC = isDCStandard(selectedStandard);
+
+    // If we're on an AC tab but have a DC standard selected, switch to default AC standard
+    if (isACTab && currentStandardIsDC) {
+      setSelectedStandard("NEC");
+    }
+    // If we're on a DC tab but have an AC standard selected, switch to default DC standard
+    else if (!isACTab && !currentStandardIsDC) {
+      setSelectedStandard("DC_AUTOMOTIVE");
+    }
+  }, [activeTab, selectedStandard]);
 
   const renderActiveComponent = () => {
     const LoadingSpinner = () => (
@@ -115,6 +131,7 @@ function App() {
               <StandardSelector
                 selectedStandard={selectedStandard}
                 onStandardChange={setSelectedStandard}
+                calculatorType="ac"
               />
             )}
           {renderActiveComponent()}
