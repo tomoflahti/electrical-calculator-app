@@ -90,18 +90,18 @@ describe("DC Calculator Integration Tests", () => {
 
       // Wait for calculation to complete
       await waitFor(() => {
-        expect(screen.getAllByText(/AWG/)[0]).toBeInTheDocument();
+        expect(screen.getAllByText(/mm²/)[0]).toBeInTheDocument();
       });
 
       // Verify that calculation ran and shows some results
       await waitFor(() => {
         // Check for either compliance section or any calculation result
         const hasCompliance = screen.queryByText(/compliance/i);
-        const hasAWG = screen.queryAllByText(/AWG/)[0];
+        const hasMm2 = screen.queryAllByText(/mm²/)[0];
         const hasEfficiency = screen.queryByText(/efficiency/i);
 
         // At least one of these should be present after calculation
-        expect(hasCompliance || hasAWG || hasEfficiency).toBeTruthy();
+        expect(hasCompliance || hasMm2 || hasEfficiency).toBeTruthy();
       });
     });
 
