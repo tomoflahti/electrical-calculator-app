@@ -423,27 +423,6 @@ This calculator is for reference purposes only. Always verify calculations and c
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## **Acknowledgments**
-
-### **Standards Organizations**
-- **NFPA (National Fire Protection Association)** - National Electrical Code (NEC)
-- **IEC (International Electrotechnical Commission)** - International electrical standards
-- **ABYC (American Boat and Yacht Council)** - Marine electrical standards  
-- **SAE International** - Automotive electrical standards
-- **UL (Underwriters Laboratories)** - Safety standards for electrical equipment
-
-### **Technology Partners**
-- **Material-UI Team** - Excellent React component library
-- **React and TypeScript Communities** - Outstanding development ecosystem
-- **Vite Team** - Fast build tooling and development experience
-- **International Electrical Engineering Community** - Standards implementation guidance
-
-### **Industry Support**
-- **Electrical contractors** and **engineers** providing real-world validation
-- **Marine electricians** for ABYC standards implementation
-- **Solar installers** for renewable energy calculations
-- **Automotive engineers** for vehicle electrical system requirements
-
 ---
 
 **Version**: 1.0.0 | **Bundle Size**: 532KB | **Test Coverage**: 77% | **Standards**: NEC + IEC + ABYC + SAE + UL

@@ -57,7 +57,7 @@ export default function DCWireCalculator({
     useState<ElectricalStandardId>(selectedStandard);
   const [selectedWireStandard, setSelectedWireStandard] = useState<
     "NEC" | "IEC"
-  >("NEC");
+  >("IEC");
 
   // Get initial voltage from standard to ensure it's valid
   const getInitialVoltage = (standard: ElectricalStandardId) => {
@@ -248,8 +248,12 @@ export default function DCWireCalculator({
               }
               data-testid="wire-standard-selector"
             >
-              <MenuItem value="NEC">NEC (AWG Wire Gauge)</MenuItem>
-              <MenuItem value="IEC">IEC (Metric mm² Cross-Section)</MenuItem>
+              <MenuItem value="IEC" data-testid="wire-standard-iec">
+                IEC (Metric mm² Cross-Section)
+              </MenuItem>
+              <MenuItem value="NEC" data-testid="wire-standard-nec">
+                NEC (AWG Wire Gauge)
+              </MenuItem>
             </Select>
           </FormControl>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
