@@ -1,20 +1,20 @@
-# International Electrical Calculator
+# International Electric Calculator
 
 A comprehensive professional web application for electrical calculations supporting both AC and DC electrical systems with international standards compliance. This tool serves electricians, engineers, and electrical contractors worldwide for wire sizing, voltage drop calculations, conduit requirements, and circuit breaker sizing across multiple electrical standards.
 
-## 🌟 Features Overview
+## Features Overview
 
-### 🌍 **AC Electrical Calculators** (NEC & IEC 60364)
+### **AC Electrical Calculators** (NEC & IEC 60364)
 - **Universal Wire/Cable Size Calculator**: Multi-standard wire sizing with ampacity and voltage drop
 - **Voltage Drop Calculator**: Single-phase and three-phase voltage drop analysis  
 - **Conduit Fill Calculator**: NEC Chapter 9 and IEC trunking compliance
 
-### ⚡ **DC Electrical Calculators** (Automotive, Marine, Solar, Telecom)
+### **DC Electrical Calculators** (Automotive, Marine, Solar, Telecom)
 - **DC Wire Calculator**: Application-specific DC wire sizing for specialized systems
 - **DC Circuit Breaker Calculator**: Separated NEC/IEC breaker sizing with power-based inputs
 - **Application Support**: Automotive, Marine, Solar, Telecommunications, Battery, LED, Industrial
 
-## 🏗️ **System Architecture**
+## **System Architecture**
 
 ### **Standards Implementation**
 
@@ -42,7 +42,7 @@ dcBreakerRouter.ts
 └── Metric-First Default (IEC)
 ```
 
-## 📁 **File Structure**
+## **File Structure**
 
 ```
 src/
@@ -92,7 +92,7 @@ src/
     └── standards.ts           # Multi-standard types
 ```
 
-## 🔧 **Technology Stack**
+## **Technology Stack**
 
 - **Frontend**: React 19 with TypeScript 5.8
 - **UI Framework**: Material-UI (MUI) v7.2
@@ -101,7 +101,7 @@ src/
 - **Performance**: 532KB optimized bundle with lazy loading
 - **Quality**: ESLint, TypeScript strict mode, Husky pre-commit hooks
 
-## 📊 **Test Coverage & Quality**
+## **Test Coverage & Quality**
 
 - **Total Test Suites**: 28 (15 passing, 13 with UI interaction issues)
 - **Test Coverage**: 77% overall (425/551 tests passing)
@@ -112,7 +112,7 @@ src/
 - **Standards Compliance**: Full NEC and IEC validation
 - **Performance Testing**: Smoke tests and deployment validation
 
-## 🚀 **Installation & Usage**
+## **Installation & Usage**
 
 ### **Quick Start**
 ```bash
@@ -165,7 +165,7 @@ npm run build
 - **IEC Approach**: IEC 62619 thermal runaway protection, specialized ESS breakers
 - **Use Cases**: Li-ion batteries, charge controllers, energy storage systems
 
-## 🔬 **Calculation Methods**
+## **Calculation Methods**
 
 ### **DC Circuit Breaker Sizing**
 
@@ -322,7 +322,7 @@ compliance: {
 4. **Maintainability**: Modular design with clear responsibilities
 5. **Testing**: Comprehensive test coverage with mocked dependencies
 
-## 🌍 **International Standards Compliance**
+## **International Standards Compliance**
 
 ### **Supported Standards**
 
@@ -346,7 +346,7 @@ compliance: {
 - **Local Code Compliance**: Always verify with local electrical authorities
 - **Professional Review**: Engineering sign-off may be required
 
-## 🧪 **Development Commands**
+## **Development Commands**
 
 ```bash
 # Development
@@ -371,7 +371,7 @@ npm run docker:build    # Build Docker container
 npm run docker:run      # Run containerized app
 ```
 
-## 🔄 **Use Cases by Industry**
+## **Use Cases by Industry**
 
 ### **Electrical Contractors**
 - **Residential**: NEC compliance for house wiring
@@ -398,13 +398,13 @@ npm run docker:run      # Run containerized app
 - **Cell Towers**: Remote site power systems
 - **Network Equipment**: High-reliability DC systems
 
-## ⚠️ **Important Safety Notice**
+## **Important Safety Notice**
 
 This calculator is for reference purposes only. Always verify calculations and consult local electrical codes and qualified professionals. Electrical work should only be performed by licensed electricians following all applicable codes, safety procedures, and local regulations.
 
 **Standards Disclaimer**: While this tool implements internationally recognized electrical standards, local codes and regulations may supersede or modify these requirements. Always consult local electrical authorities and obtain proper permits.
 
-## 🤝 **Contributing**
+## **Contributing**
 
 1. **Fork** the repository
 2. **Create** a feature branch (`git checkout -b feature/new-standard`)
@@ -419,11 +419,11 @@ This calculator is for reference purposes only. Always verify calculations and c
 - **Test Coverage**: Maintain 95%+ coverage for calculation engines
 - **Documentation**: Update README and inline comments
 
-## 📄 **License**
+## **License**
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 **Acknowledgments**
+## **Acknowledgments**
 
 ### **Standards Organizations**
 - **NFPA (National Fire Protection Association)** - National Electrical Code (NEC)

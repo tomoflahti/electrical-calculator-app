@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Deployment script for International Electrical Calculator
+# Deployment script for International Electric Calculator
 # Supports multiple deployment targets and environments
 
 set -e  # Exit on any error
 
 # Configuration
-APP_NAME="electrical-calculator"
+APP_NAME="electric-calculator"
 VERSION=$(node -p "require('./package.json').version")
 BUILD_DIR="dist"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")

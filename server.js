@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Simple Express server for serving the electrical calculator
+ * Simple Express server for serving the electric calculator
  * Useful for local development and simple deployments
  */
 

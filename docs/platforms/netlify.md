@@ -1,8 +1,8 @@
 # Netlify Deployment Guide
 
-Complete guide for deploying the International Electrical Calculator to Netlify.
+Complete guide for deploying the Electrical Calculator to Netlify.
 
-## 🚀 Quick Start (30 seconds)
+## Quick Start (30 seconds)
 
 ### Option 1: Drag & Drop Deploy
 1. Run `npm run build`
@@ -22,13 +22,13 @@ npm run build
 netlify deploy --prod --dir=dist
 ```
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Netlify account (free tier available)
 - Git repository (for automatic deployments)
 - Node.js 18+ for local builds
 
-## 🌐 Deployment Methods
+## Deployment Methods
 
 ### Method 1: GitHub Integration (Recommended)
 
@@ -82,7 +82,7 @@ npm run build
    - Drag `dist` folder to deploy area
    - Get instant URL
 
-## ⚙️ Configuration
+## Configuration
 
 ### netlify.toml (Included)
 
@@ -131,7 +131,7 @@ REACT_APP_ANALYTICS_ID=your-analytics-id
 - **Publish directory**: `dist`
 - **Functions directory**: `netlify/functions` (if using)
 
-## 🌍 Custom Domain Setup
+## Custom Domain Setup
 
 ### Add Custom Domain
 
@@ -165,7 +165,7 @@ For `calculator.yourdomain.com`:
 CNAME calculator your-site-name.netlify.app
 ```
 
-## 🔄 Continuous Deployment
+## Continuous Deployment
 
 ### Branch Deploys
 
@@ -200,7 +200,7 @@ Create webhook for external triggers:
 curl -X POST -d {} https://api.netlify.com/build_hooks/YOUR_HOOK_ID
 ```
 
-## 📊 Performance & Optimization
+## Performance & Optimization
 
 ### Build Optimization
 
@@ -249,7 +249,7 @@ Headers in `netlify.toml`:
     Cache-Control = "public, max-age=3600, must-revalidate"
 ```
 
-## 🛠️ Advanced Features
+## Advanced Features
 
 ### Form Handling (Optional)
 
@@ -310,7 +310,7 @@ Configure split testing:
   conditions = {Country = ["US"]}
 ```
 
-## 🔒 Security Features
+## Security Features
 
 ### Security Headers (Included)
 
@@ -341,7 +341,7 @@ Restrict access to staging sites:
     # Only allow specific IPs
 ```
 
-## 💰 Pricing
+## Pricing
 
 ### Free Tier
 - **Bandwidth**: 100GB/month
@@ -364,7 +364,7 @@ Restrict access to staging sites:
 - **Analytics**: Included
 - **Perfect for**: Team projects, businesses
 
-## 📊 Monitoring & Analytics
+## Monitoring & Analytics
 
 ### Build Monitoring
 
@@ -400,7 +400,7 @@ Sentry.init({
 });
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -414,19 +414,35 @@ netlify build --clear-cache
 
 # Debug locally
 netlify dev
+
+# Local validation before deploy
+npm run build
+npm run validate  # Validates deployment readiness
 ```
 
-**White Screen / App Not Loading** (FIXED in 2025):
-Our application was experiencing white screen issues on Netlify deployment. These have been resolved:
+**TypeScript Build Issues**:
+```bash
+# If TypeScript conflicts occur, use proper build sequence
+npm run build  # Uses: tsc --noEmit && vite build
 
-✅ **Fixed Issues**:
-- **Content Security Policy**: Updated `netlify.toml` to allow Material-UI styles and scripts
-- **Asset Paths**: Changed from absolute (`/assets/`) to relative (`./assets/`) paths in Vite config
-- **Error Boundaries**: Added comprehensive error handling for lazy-loaded components
-- **React 19 Compatibility**: Added fallback error handling in main.tsx
-- **Metadata**: Fixed missing title and description tags
+# Ensure environment variables are set correctly
+NODE_ENV=production
+NPM_CONFIG_PRODUCTION=false
+SKIP_PREFLIGHT_CHECK=true
+```
 
-**If you still see a white screen**:
+**Bundle/Chunk Loading Errors**:
+```bash
+# Clean everything and rebuild
+rm -rf node_modules dist
+npm install
+npm run build
+
+# Test locally before deploy
+npm run preview
+```
+
+**If you see a white screen**:
 1. Check browser console for errors
 2. Verify CSP is not blocking resources
 3. Test locally with `npm run build && npm run preview`
@@ -471,9 +487,31 @@ dig calculator.yourdomain.com
 
 # Test SSL certificate
 openssl s_client -connect calculator.yourdomain.com:443
+
+# Deployment validation
+npm run validate  # Validates dist folder and configuration
+
+# Build analysis
+npm run build && ls -la dist/  # Check build output size and structure
 ```
 
-## 📞 Support Resources
+### Advanced Troubleshooting
+
+**Module Not Found Errors**:
+- Check import paths and ensure all dynamic imports have proper error boundaries
+- Verify all dependencies are properly installed in package.json
+
+**Build Timeout Issues**:
+- Use simplified configuration if builds take too long
+- Check for memory-intensive operations during build
+
+**Performance Verification After Deploy**:
+1. **Lighthouse Score**: Should be 90+ for performance
+2. **Bundle Analysis**: Total ~656KB across all chunks
+3. **Lazy Loading**: Calculator components load on-demand
+4. **Caching**: Static assets cached with appropriate headers
+
+## Support Resources
 
 - **Documentation**: https://docs.netlify.com/
 - **Community**: https://community.netlify.com/
@@ -482,7 +520,7 @@ openssl s_client -connect calculator.yourdomain.com:443
 
 ---
 
-## 📋 Quick Commands Summary
+## Quick Commands Summary
 
 ```bash
 # CLI deployment
@@ -504,4 +542,4 @@ netlify open
 netlify logs
 ```
 
-Your International Electrical Calculator is now ready for professional Netlify deployment with automatic HTTPS, global CDN, and continuous deployment! 🚀⚡
+...and Bob's your uncle, Electrical Calculator is now ready for professional Netlify deployment with automatic HTTPS, global CDN, and continuous deployment.

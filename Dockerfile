@@ -1,4 +1,4 @@
-# Multi-stage build for International Electrical Calculator
+# Multi-stage build for International Electric Calculator
 # Stage 1: Build the application
 FROM node:20-alpine as build
 

@@ -1,8 +1,8 @@
 # AWS Deployment Guide
 
-Complete guide for deploying the International Electrical Calculator to Amazon Web Services.
+Complete guide for deploying the International Electric Calculator to Amazon Web Services.
 
-## 🚀 Quick Start Options
+## Quick Start Options
 
 ### Option 1: AWS S3 + CloudFront (Static Hosting)
 - **Best for**: Simple, cost-effective static hosting
@@ -19,13 +19,13 @@ Complete guide for deploying the International Electrical Calculator to Amazon W
 - **Cost**: ~$15-100/month depending on usage
 - **Complexity**: High
 
-## 📋 Prerequisites
+## Prerequisites
 
 - AWS Account with appropriate permissions
 - AWS CLI installed and configured
 - Domain name (optional, for custom domain)
 
-## 🌐 Option 1: S3 + CloudFront (Recommended)
+## Option 1: S3 + CloudFront (Recommended)
 
 ### Step 1: Create S3 Bucket
 
@@ -159,7 +159,7 @@ aws route53 create-hosted-zone \
 # Add CNAME record pointing to CloudFront distribution
 ```
 
-## 🐳 Option 2: AWS Elastic Beanstalk
+## Option 2: AWS Elastic Beanstalk
 
 ### Step 1: Install EB CLI
 
@@ -214,7 +214,7 @@ eb deploy
 eb open
 ```
 
-## 🏗️ Option 3: AWS ECS/Fargate
+## Option 3: AWS ECS/Fargate
 
 ### Step 1: Create ECR Repository
 
@@ -303,7 +303,7 @@ aws ecs create-service \
     --network-configuration "awsvpcConfiguration={subnets=[subnet-12345],securityGroups=[sg-12345],assignPublicIp=ENABLED}"
 ```
 
-## 🔄 CI/CD with GitHub Actions
+## CI/CD with GitHub Actions
 
 The provided `.github/workflows/deploy.yml` includes AWS deployment. Set these secrets:
 
@@ -315,7 +315,7 @@ S3_BUCKET_NAME=electrical-calculator-yourname
 CLOUDFRONT_DISTRIBUTION_ID=E1234567890ABC  # Optional
 ```
 
-## 💰 Cost Estimation
+## Cost Estimation
 
 ### S3 + CloudFront
 - **S3 Storage**: ~$0.50/month (20GB)
@@ -335,7 +335,7 @@ CLOUDFRONT_DISTRIBUTION_ID=E1234567890ABC  # Optional
 - **Data Transfer**: ~$1-5/month
 - **Total**: ~$10-15/month
 
-## 📊 Monitoring and Logging
+## Monitoring and Logging
 
 ### CloudWatch Setup
 
@@ -373,7 +373,7 @@ Add to task definition:
 }
 ```
 
-## 🔒 Security Best Practices
+## Security Best Practices
 
 ### IAM Policies
 
@@ -413,7 +413,7 @@ aws wafv2 create-web-acl \
     --rules file://waf-rules.json
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -448,7 +448,7 @@ aws logs get-log-events \
 
 ---
 
-## 📞 Quick Commands Summary
+## Quick Commands Summary
 
 ```bash
 # S3 Deployment
@@ -467,4 +467,4 @@ docker tag electrical-calculator:latest ECR_URL:latest
 docker push ECR_URL:latest
 ```
 
-Your International Electrical Calculator is now ready for professional AWS deployment! 🚀⚡
+...and Bob's your uncle,  Electrical Calculator is now ready for professional AWS deployment.

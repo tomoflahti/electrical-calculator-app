@@ -2,11 +2,11 @@
 version: '3.8'
 
 services:
-  electrical-calculator:
+  electric-calculator:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: electrical-calculator-prod
+    container_name: electric-calculator-prod
     restart: always
     ports:
       - "80:80"
