@@ -39,38 +39,55 @@ interface VoltageDropCalculatorProps {
   selectedStandard?: ElectricalStandardId;
 }
 
+// Helper function to check if standard uses metric system
+const isMetricStandard = (standard: ElectricalStandardId): boolean => {
+  return standard === "IEC" || standard === "BS7671";
+};
+
+// Get standard display name
+const getStandardDisplayName = (standard: ElectricalStandardId): string => {
+  switch (standard) {
+    case "BS7671":
+      return "BS 7671";
+    case "IEC":
+      return "IEC 60364";
+    case "NEC":
+      return "NEC";
+    default:
+      return standard;
+  }
+};
+
+// Get initial voltage based on standard
+const getInitialVoltage = (standard: ElectricalStandardId) => {
+  const voltageOptions = getVoltageOptions(standard);
+  return voltageOptions.single[0] || voltageOptions.threephase[0] || 120;
+};
+
+// Get initial installation method based on standard
+const getInitialInstallationMethod = (
+  standard: ElectricalStandardId,
+): InstallationMethod => {
+  const methods = getInstallationMethods(standard);
+  return (methods[0]?.id as InstallationMethod) || "conduit";
+};
+
+// Get initial wire gauge based on standard
+const getInitialWireGauge = (standard: ElectricalStandardId) => {
+  if (isMetricStandard(standard)) {
+    return "2.5"; // Default metric mm² size
+  } else {
+    return "12"; // Default NEC AWG size
+  }
+};
+
 export default function VoltageDropCalculator({
   selectedStandard = "NEC",
 }: VoltageDropCalculatorProps) {
-  // Get initial voltage based on standard
-  const getInitialVoltage = (standard: ElectricalStandardId) => {
-    const voltageOptions = getVoltageOptions(
-      standard === "IEC" ? "IEC" : "NEC",
-    );
-    return voltageOptions.single[0] || voltageOptions.threephase[0] || 120;
-  };
-
-  // Get initial installation method based on standard
-  const getInitialInstallationMethod = (
-    standard: ElectricalStandardId,
-  ): InstallationMethod => {
-    const methods = getInstallationMethods(standard);
-    return (methods[0]?.id as InstallationMethod) || "conduit";
-  };
-
-  // Get initial wire gauge based on standard
-  const getInitialWireGauge = (standard: ElectricalStandardId) => {
-    if (standard === "IEC" || standard === "BS7671") {
-      return "2.5"; // Default IEC mm² size
-    } else {
-      return "12"; // Default NEC AWG size
-    }
-  };
-
   const [input, setInput] = useState<VoltageDropInput>({
     wireGauge: getInitialWireGauge(selectedStandard),
     current: 20,
-    length: selectedStandard === "IEC" ? 30.48 : 100,
+    length: isMetricStandard(selectedStandard) ? 30.48 : 100,
     voltage: getInitialVoltage(selectedStandard),
     conductorMaterial: "copper",
     wireType: "single",
@@ -98,7 +115,11 @@ export default function VoltageDropCalculator({
         const newInput = { ...prev };
 
         // Convert units and set valid default values for the new standard
-        if (prevStandard === "NEC" && selectedStandard === "IEC") {
+        const prevIsMetric = isMetricStandard(prevStandard);
+        const newIsMetric = isMetricStandard(selectedStandard);
+
+        if (!prevIsMetric && newIsMetric) {
+          // Converting from NEC to metric (IEC or BS7671)
           newInput.length = feetToMeters(prev.length);
           // Convert AWG to mm²
           if (prev.wireGauge === "14") newInput.wireGauge = "2.5";
@@ -106,9 +127,10 @@ export default function VoltageDropCalculator({
           else if (prev.wireGauge === "10") newInput.wireGauge = "6";
           else if (prev.wireGauge === "8") newInput.wireGauge = "10";
           else newInput.wireGauge = "2.5";
-          // Set valid IEC voltage
+          // Set valid voltage for the new metric standard
           newInput.voltage = getInitialVoltage(selectedStandard);
-        } else if (prevStandard === "IEC" && selectedStandard === "NEC") {
+        } else if (prevIsMetric && !newIsMetric) {
+          // Converting from metric (IEC or BS7671) to NEC
           newInput.length = metersToFeet(prev.length);
           // Convert mm² to AWG
           if (prev.wireGauge === "2.5") newInput.wireGauge = "14";
@@ -119,10 +141,9 @@ export default function VoltageDropCalculator({
           // Set valid NEC voltage
           newInput.voltage = getInitialVoltage(selectedStandard);
         } else {
-          // For any other standard change, ensure valid voltage and wire gauge
-          const newVoltageOptions = getVoltageOptions(
-            selectedStandard === "IEC" ? "IEC" : "NEC",
-          );
+          // Same system (metric to metric, or within same standard)
+          // Just ensure voltage and wire gauge are valid for the new standard
+          const newVoltageOptions = getVoltageOptions(selectedStandard);
           const allNewVoltages = [
             ...newVoltageOptions.single,
             ...newVoltageOptions.threephase,
@@ -131,7 +152,9 @@ export default function VoltageDropCalculator({
             newInput.voltage = getInitialVoltage(selectedStandard);
           }
           // Ensure wire gauge is valid for the new standard
-          newInput.wireGauge = getInitialWireGauge(selectedStandard);
+          if (prevIsMetric !== newIsMetric) {
+            newInput.wireGauge = getInitialWireGauge(selectedStandard);
+          }
         }
 
         return newInput;
@@ -195,7 +218,7 @@ export default function VoltageDropCalculator({
 
   // Get wire options based on standard
   const getWireOptions = () => {
-    if (selectedStandard === "IEC") {
+    if (isMetricStandard(selectedStandard)) {
       return IEC_CABLE_CROSS_SECTIONS.map((cable) => ({
         value: cable.size,
         label: `${cable.size} mm²`,
@@ -228,18 +251,18 @@ export default function VoltageDropCalculator({
   };
 
   // Get voltage options based on standard
-  const voltageOptions = getVoltageOptions(
-    selectedStandard === "IEC" ? "IEC" : "NEC",
-  );
+  const voltageOptions = getVoltageOptions(selectedStandard);
   const allVoltageOptions = [
     ...voltageOptions.single,
     ...voltageOptions.threephase,
   ];
 
   // Get unit labels based on standard
-  const lengthUnit = selectedStandard === "IEC" ? "m" : "ft";
-  const wireLabel = selectedStandard === "IEC" ? "Cable Size" : "Wire Gauge";
-  const standardName = selectedStandard === "IEC" ? "IEC 60364" : "NEC";
+  const lengthUnit = isMetricStandard(selectedStandard) ? "m" : "ft";
+  const wireLabel = isMetricStandard(selectedStandard)
+    ? "Cable Size"
+    : "Wire Gauge";
+  const standardName = getStandardDisplayName(selectedStandard);
 
   return (
     <Box>
@@ -480,7 +503,17 @@ export default function VoltageDropCalculator({
                     </Alert>
 
                     <Typography variant="body2" color="text.secondary">
-                      {selectedStandard === "IEC" ? (
+                      {selectedStandard === "BS7671" ? (
+                        <>
+                          <strong>BS 7671 limits:</strong>
+                          <br />
+                          • Lighting circuits: ≤3% voltage drop (6.9V max at
+                          230V)
+                          <br />
+                          • Other circuits: ≤5% voltage drop (11.5V max at 230V)
+                          <br />• Based on public distribution system supply
+                        </>
+                      ) : selectedStandard === "IEC" ? (
                         <>
                           <strong>IEC 60364 limits:</strong>
                           <br />

@@ -410,6 +410,209 @@ describe("VoltageDropCalculator", () => {
         expect(screen.getAllByText(/IEC/)[0]).toBeInTheDocument();
       });
     });
+
+    it("should show standard indicator for BS7671", async () => {
+      render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getAllByText(/BS 7671/)[0]).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("BS7671 Standard Support", () => {
+    it("should render with BS7671 standard", () => {
+      render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText("Voltage Drop Calculator")).toBeInTheDocument();
+      expect(screen.getByText("Input Parameters")).toBeInTheDocument();
+      expect(screen.getByText("Calculate Voltage Drop")).toBeInTheDocument();
+    });
+
+    it("should show mm² wire sizes for BS7671 standard", async () => {
+      render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Voltage Drop Calculator")).toBeInTheDocument();
+      });
+
+      // Should show mm² format in the selected cable size for BS7671 standard
+      expect(screen.getByText("2.5 mm²")).toBeInTheDocument();
+    });
+
+    it("should show meter units for BS7671 standard", async () => {
+      render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Voltage Drop Calculator")).toBeInTheDocument();
+      });
+
+      // Check if component has meter unit reference (may be in label or input)
+      expect(screen.getAllByText(/\(m\)/)[0]).toBeInTheDocument();
+    });
+
+    it("should show UK voltage options for BS7671 standard", async () => {
+      render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Voltage Drop Calculator")).toBeInTheDocument();
+      });
+
+      // Check that BS7671 standard shows 230V as default
+      expect(screen.getAllByText("230V")[0]).toBeInTheDocument();
+    });
+
+    it("should use wire calculator router for BS7671 standard", async () => {
+      const {
+        calculateWireSize,
+      } = require("../../utils/calculations/wireCalculatorRouter");
+
+      render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Voltage Drop Calculator")).toBeInTheDocument();
+      });
+
+      // Trigger calculation without modifying inputs
+      fireEvent.click(screen.getByText("Calculate Voltage Drop"));
+
+      await waitFor(() => {
+        expect(calculateWireSize).toHaveBeenCalledWith(
+          expect.objectContaining({
+            standard: "BS7671",
+          }),
+        );
+      });
+    });
+
+    it("should show correct BS 7671 voltage drop limits", async () => {
+      render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Voltage Drop Calculator")).toBeInTheDocument();
+      });
+
+      // Trigger calculation
+      fireEvent.click(screen.getByText("Calculate Voltage Drop"));
+
+      await waitFor(() => {
+        expect(screen.getByText(/BS 7671 limits/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Lighting circuits: ≤3% voltage drop/),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/Other circuits: ≤5% voltage drop/),
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("BS7671 Unit Conversion", () => {
+    it("should convert from NEC to BS7671 (feet to meters, AWG to mm²)", async () => {
+      const { rerender } = render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="NEC" />
+        </TestWrapper>,
+      );
+
+      // Verify initial NEC state
+      await waitFor(() => {
+        expect(screen.getByText("12 AWG")).toBeInTheDocument();
+      });
+
+      // Switch to BS7671
+      rerender(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      // Should show metric units and mm² sizes after conversion
+      await waitFor(() => {
+        expect(screen.getByText("2.5 mm²")).toBeInTheDocument();
+        expect(screen.getByText("Cable Size")).toBeInTheDocument(); // Label should change too
+      });
+    });
+
+    it("should convert from BS7671 to NEC (meters to feet, mm² to AWG)", async () => {
+      const { rerender } = render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      // Verify initial BS7671 state
+      await waitFor(() => {
+        expect(screen.getByText("2.5 mm²")).toBeInTheDocument();
+      });
+
+      // Switch to NEC
+      rerender(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="NEC" />
+        </TestWrapper>,
+      );
+
+      // Should show imperial units and AWG sizes after conversion
+      await waitFor(() => {
+        expect(screen.getByText("14 AWG")).toBeInTheDocument(); // Converted from 2.5mm²
+        expect(screen.getByText("Wire Gauge")).toBeInTheDocument(); // Label should change too
+      });
+    });
+
+    it("should handle BS7671 ↔ IEC switching without conversion", async () => {
+      const { rerender } = render(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="BS7671" />
+        </TestWrapper>,
+      );
+
+      // Verify initial BS7671 state
+      await waitFor(() => {
+        expect(screen.getByText("2.5 mm²")).toBeInTheDocument();
+      });
+
+      // Switch to IEC
+      rerender(
+        <TestWrapper>
+          <VoltageDropCalculatorWithStandard selectedStandard="IEC" />
+        </TestWrapper>,
+      );
+
+      // Should maintain metric units (both use mm²)
+      await waitFor(() => {
+        expect(screen.getByText("2.5 mm²")).toBeInTheDocument();
+        expect(screen.getByText("Cable Size")).toBeInTheDocument();
+      });
+    });
   });
 
   describe("Error Handling", () => {
