@@ -9,6 +9,7 @@ import {
   Box,
   Chip,
   Divider,
+  ListSubheader,
 } from "@mui/material";
 import {
   Public,
@@ -83,15 +84,7 @@ export default function StandardSelector({
             {/* AC Standards Group - only show if calculatorType allows */}
             {(calculatorType === "all" || calculatorType === "ac") && (
               <>
-                <Box sx={{ p: 1, bgcolor: "action.hover" }}>
-                  <Typography
-                    variant="caption"
-                    fontWeight="bold"
-                    color="primary"
-                  >
-                    AC Standards (Mains Power)
-                  </Typography>
-                </Box>
+                <ListSubheader>AC Standards (Mains Power)</ListSubheader>
                 {acStandards.map((standard) => {
                   const IconComponent = getStandardIcon(standard.id);
                   return (
@@ -116,15 +109,7 @@ export default function StandardSelector({
             {/* DC Standards Group - only show if calculatorType allows */}
             {(calculatorType === "all" || calculatorType === "dc") && (
               <>
-                <Box sx={{ p: 1, bgcolor: "action.hover" }}>
-                  <Typography
-                    variant="caption"
-                    fontWeight="bold"
-                    color="secondary"
-                  >
-                    DC Standards (Low Voltage)
-                  </Typography>
-                </Box>
+                <ListSubheader>DC Standards (Low Voltage)</ListSubheader>
                 {dcStandards.map((standard) => {
                   const IconComponent = getStandardIcon(standard.id);
                   return (
